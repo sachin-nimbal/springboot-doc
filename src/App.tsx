@@ -7,6 +7,7 @@ import MobileDrawer from './components/MobileDrawer';
 import Footer from './components/Footer';
 import Overview from './pages/Overview';
 import GettingStarted from './pages/GettingStarted';
+import QuickSetup from './pages/QuickSetup';
 import CoreAnnotations from './pages/CoreAnnotations';
 import BaseEntities from './pages/BaseEntities';
 import RestEndpoints from './pages/RestEndpoints';
@@ -83,7 +84,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Navigate to="/overview" replace />} />
                 <Route path="/overview" element={<Overview />} />
-                <Route path="/quick-setup" element={<GettingStarted />} />
+                <Route path="/quick-setup" element={<QuickSetup />} />
                 <Route path="/getting-started" element={<GettingStarted />} />
                 <Route path="/core-annotations" element={<CoreAnnotations />} />
                 <Route path="/base-entities" element={<BaseEntities />} />
