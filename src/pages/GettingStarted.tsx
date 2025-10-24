@@ -1,7 +1,6 @@
 import React from 'react';
 import { 
   CheckCircleIcon, 
-  ExclamationTriangleIcon,
   InformationCircleIcon 
 } from '@heroicons/react/24/outline';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/Card';

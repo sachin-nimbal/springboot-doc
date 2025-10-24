@@ -3,20 +3,17 @@ import { Link } from 'react-router-dom';
 import { 
   Bars3Icon, 
   MagnifyingGlassIcon, 
-  SunIcon, 
-  MoonIcon,
   CodeBracketIcon 
 } from '@heroicons/react/24/outline';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBox } from './SearchBox';
-import { MobileDrawer } from './MobileDrawer';
 
 interface HeaderProps {
   onMenuToggle: () => void;
   isMenuOpen: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMenuOpen }) => {
+export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
