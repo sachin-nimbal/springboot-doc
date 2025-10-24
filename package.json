@@ -1,7 +1,7 @@
 {
-  "name": "springboot-doc",
+  "name": "crudx-documentation",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,7 +17,9 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "@headlessui/react": "^2.2.0",
+    "prismjs": "^1.32.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

@@ -1,20 +1,25 @@
 import { NavLink } from 'react-router-dom';
-import { FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
+import { FileText, Rocket, Tag, Database, Zap, BookOpen, Code, Settings } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 const navigation = [
   {
     title: 'Getting Started',
     items: [
-      { title: 'Overview', path: '/overview', icon: FileText },
-      { title: 'Getting Started', path: '/getting-started', icon: Rocket },
+      { title: 'Overview', path: '/overview', icon: BookOpen },
+      { title: 'Quick Setup', path: '/quick-setup', icon: Rocket },
     ],
   },
   {
-    title: 'Core Concepts',
+    title: 'Core Annotations',
     items: [
-      { title: 'Annotations', path: '/annotations', icon: Tag },
-      { title: 'Entities', path: '/entities', icon: Database },
+      { title: 'Core Annotations', path: '/core-annotations', icon: Tag },
+      { title: 'Base Entities', path: '/base-entities', icon: Database },
+    ],
+  },
+  {
+    title: 'API Reference',
+    items: [
       { title: 'REST Endpoints', path: '/rest-endpoints', icon: Zap },
     ],
   },
@@ -37,7 +42,7 @@ export default function Sidebar() {
                     cn(
                       'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors focus-ring',
                       isActive
-                        ? 'bg-accent text-accent-foreground font-medium border-l-2 border-primary'
+                        ? 'bg-primary/10 text-primary font-medium border-l-2 border-primary'
                         : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                     )
                   }

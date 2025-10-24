@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Menu, Search, Command } from 'lucide-react';
+import { Menu, Search, Command, Github } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import SearchBox from './SearchBox';
@@ -34,30 +34,15 @@ export default function Header({ onMenuClick, onSearchClick, isSearchOpen, onSea
               </button>
 
               <Link to="/" className="flex items-center gap-3 focus-ring rounded-lg">
-                {/* Inline SVG Logo */}
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="flex-shrink-0"
-                >
-                  <rect width="32" height="32" rx="8" className="fill-primary" />
-                  <path
-                    d="M16 8L22 12V20L16 24L10 20V12L16 8Z"
-                    className="fill-primary-foreground"
-                    opacity="0.9"
-                  />
-                  <path
-                    d="M16 12L19 14V18L16 20L13 18V14L16 12Z"
-                    className="fill-primary-foreground"
-                    opacity="0.6"
-                  />
-                </svg>
-                <div className="hidden sm:block">
-                  <div className="text-base font-semibold">Premium Docs</div>
-                  <div className="text-xs text-muted-foreground">Modern Documentation</div>
+                {/* CrudX Logo */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-crudx-purple to-crudx-indigo rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">C</span>
+                  </div>
+                  <div className="hidden sm:block">
+                    <div className="text-lg font-bold gradient-text">CrudX</div>
+                    <div className="text-xs text-muted-foreground">Framework Documentation</div>
+                  </div>
                 </div>
               </Link>
             </div>
@@ -91,10 +76,20 @@ export default function Header({ onMenuClick, onSearchClick, isSearchOpen, onSea
                 <Search className="w-5 h-5" />
               </button>
 
+              <a
+                href="https://github.com/sachinnimbal/crudx-framework"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 hover:bg-accent rounded-lg focus-ring transition-colors"
+                aria-label="GitHub Repository"
+              >
+                <Github className="w-5 h-5" />
+              </a>
+
               <ThemeToggle />
 
               <Link
-                to="/getting-started"
+                to="/quick-setup"
                 className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:opacity-90 focus-ring transition-opacity"
               >
                 Get Started

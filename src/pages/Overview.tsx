@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Shield, Code, Sparkles } from 'lucide-react';
+import { ArrowRight, Zap, Shield, Code, Sparkles, Github, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
@@ -10,9 +10,10 @@ import TOC from '../components/TOC';
 
 const tocItems = [
   { id: 'introduction', title: 'Introduction', level: 2 },
+  { id: 'what-is-crudx', title: 'What is CrudX?', level: 2 },
   { id: 'key-features', title: 'Key Features', level: 2 },
   { id: 'quick-example', title: 'Quick Example', level: 2 },
-  { id: 'next-steps', title: 'Next Steps', level: 2 },
+  { id: 'getting-started', title: 'Getting Started', level: 2 },
 ];
 
 export default function Overview() {
@@ -28,28 +29,37 @@ export default function Overview() {
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <Badge variant="info" className="mb-4">
-            Version 1.0.0
-          </Badge>
+          <div className="flex items-center gap-3 mb-4">
+            <Badge variant="info" className="bg-crudx-purple/10 text-crudx-purple border-crudx-purple/20">
+              v2.1.0
+            </Badge>
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span>4.8/5 on GitHub</span>
+            </div>
+          </div>
           <h1 className="hero-title mb-4">
-            Welcome to <span className="gradient-text">Premium Docs</span>
+            Welcome to <span className="gradient-text">CrudX Framework</span>
           </h1>
           <p className="hero-subtitle max-w-3xl">
-            Build modern, scalable applications with our powerful and intuitive
-            framework. Get started in minutes with our comprehensive documentation.
+            A powerful, type-safe framework for building REST APIs with Spring Boot. 
+            Generate CRUD operations automatically with minimal configuration and maximum flexibility.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
             <Link
-              to="/getting-started"
+              to="/quick-setup"
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 focus-ring transition-opacity"
             >
-              Get Started
+              Quick Setup
               <ArrowRight className="w-4 h-4" />
             </Link>
             <a
-              href="https://github.com"
+              href="https://github.com/sachinnimbal/crudx-framework"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg font-medium hover:bg-accent focus-ring transition-colors"
             >
+              <Github className="w-4 h-4" />
               View on GitHub
             </a>
           </div>
@@ -59,18 +69,37 @@ export default function Overview() {
         <section id="introduction" className="prose mb-12">
           <h2>Introduction</h2>
           <p>
-            Premium Docs provides a comprehensive framework for building modern web
-            applications with TypeScript, React, and REST APIs. Our framework is
-            designed with developer experience in mind, offering powerful features
-            while maintaining simplicity and elegance.
+            CrudX is a powerful Spring Boot framework that automatically generates 
+            REST API endpoints for your JPA entities. With minimal configuration, 
+            you can create full-featured CRUD operations, pagination, filtering, 
+            and more. Built with developer productivity in mind.
           </p>
-          <Alert variant="info" title="New to Premium Docs?" className="my-6">
+          <Alert variant="info" title="New to CrudX?" className="my-6">
             Check out our{' '}
-            <Link to="/getting-started" className="underline">
-              Getting Started guide
+            <Link to="/quick-setup" className="underline">
+              Quick Setup guide
             </Link>{' '}
-            to learn the basics and build your first application.
+            to get started with your first CrudX application in minutes.
           </Alert>
+        </section>
+
+        {/* What is CrudX */}
+        <section id="what-is-crudx" className="prose mb-12">
+          <h2>What is CrudX?</h2>
+          <p>
+            CrudX is a Spring Boot extension that provides automatic REST API generation 
+            for your JPA entities. Instead of writing boilerplate controller code, 
+            CrudX analyzes your entity classes and generates comprehensive REST endpoints 
+            with features like:
+          </p>
+          <ul>
+            <li>Automatic CRUD operations (Create, Read, Update, Delete)</li>
+            <li>Built-in pagination and sorting</li>
+            <li>Advanced filtering and search capabilities</li>
+            <li>Request validation and error handling</li>
+            <li>OpenAPI/Swagger documentation generation</li>
+            <li>Customizable endpoint behavior</li>
+          </ul>
         </section>
 
         {/* Key Features */}
@@ -81,14 +110,13 @@ export default function Overview() {
           <div className="grid sm:grid-cols-2 gap-4">
             <Card hover>
               <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Zap className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-crudx-purple/10">
+                  <Zap className="w-6 h-6 text-crudx-purple" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
+                  <h3 className="text-lg font-semibold mb-2">Auto-Generated APIs</h3>
                   <p className="text-sm text-muted-foreground">
-                    Built for performance with optimized rendering and minimal bundle
-                    sizes.
+                    Automatically generate REST endpoints from your JPA entities with zero configuration.
                   </p>
                 </div>
               </div>
@@ -96,14 +124,13 @@ export default function Overview() {
 
             <Card hover>
               <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Shield className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-crudx-indigo/10">
+                  <Shield className="w-6 h-6 text-crudx-indigo" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Type Safe</h3>
                   <p className="text-sm text-muted-foreground">
-                    Full TypeScript support with comprehensive type definitions and
-                    inference.
+                    Full type safety with automatic request/response validation and error handling.
                   </p>
                 </div>
               </div>
@@ -111,14 +138,13 @@ export default function Overview() {
 
             <Card hover>
               <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Code className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-crudx-blue/10">
+                  <Code className="w-6 h-6 text-crudx-blue" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Developer Friendly</h3>
                   <p className="text-sm text-muted-foreground">
-                    Intuitive APIs and excellent developer experience with hot reload
-                    and debugging tools.
+                    Intuitive annotations and excellent developer experience with hot reload.
                   </p>
                 </div>
               </div>
@@ -126,14 +152,13 @@ export default function Overview() {
 
             <Card hover>
               <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Sparkles className="w-6 h-6 text-primary" />
+                <div className="p-2 rounded-lg bg-crudx-pink/10">
+                  <Sparkles className="w-6 h-6 text-crudx-pink" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Modern Stack</h3>
+                  <h3 className="text-lg font-semibold mb-2">Spring Boot Native</h3>
                   <p className="text-sm text-muted-foreground">
-                    Built with the latest technologies including React 18, Vite 5, and
-                    TypeScript 5.
+                    Built on Spring Boot with full integration for security, validation, and more.
                   </p>
                 </div>
               </div>
@@ -144,53 +169,74 @@ export default function Overview() {
         {/* Quick Example */}
         <section id="quick-example" className="prose mb-12">
           <h2>Quick Example</h2>
-          <p>Here's a simple example to get you started:</p>
+          <p>Here's how easy it is to create a REST API with CrudX:</p>
           <div className="not-prose">
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm font-mono">
-              <code>{`import { createApp } from 'premium-docs';
-
-const app = createApp({
-  port: 3000,
-  cors: true,
-});
-
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello, World!' });
-});
-
-app.listen();`}</code>
-            </pre>
+            <div className="code-block">
+              <div className="code-block-header">
+                <span className="text-sm font-medium">User.java</span>
+                <button className="text-xs text-muted-foreground hover:text-foreground">
+                  Copy
+                </button>
+              </div>
+              <div className="code-block-content">
+                <pre className="text-sm font-mono overflow-x-auto">
+                  <code>{`@Entity
+@Table(name = "users")
+@CrudXController
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String name;
+    
+    @Column(unique = true, nullable = false)
+    private String email;
+    
+    // Getters and setters...
+}`}</code>
+                </pre>
+              </div>
+            </div>
           </div>
+          <p className="mt-4">
+            That's it! CrudX automatically generates these REST endpoints:
+          </p>
+          <ul>
+            <li><code>GET /api/users</code> - List all users with pagination</li>
+            <li><code>GET /api/users/{id}</code> - Get user by ID</li>
+            <li><code>POST /api/users</code> - Create new user</li>
+            <li><code>PUT /api/users/{id}</code> - Update user</li>
+            <li><code>DELETE /api/users/{id}</code> - Delete user</li>
+          </ul>
           <Alert variant="success" title="Pro Tip" className="my-6">
-            Use our CLI tool to scaffold a new project with best practices and
-            recommended configurations built-in.
+            Use our Spring Boot starter to add CrudX to your existing project with just one dependency.
           </Alert>
         </section>
 
-        {/* Next Steps */}
-        <section id="next-steps" className="prose mb-12">
-          <h2>Next Steps</h2>
-          <p>Ready to dive deeper? Here are some resources to explore:</p>
+        {/* Getting Started */}
+        <section id="getting-started" className="prose mb-12">
+          <h2>Getting Started</h2>
+          <p>Ready to build your first CrudX application? Here's what you need to know:</p>
           <ul>
             <li>
-              <Link to="/getting-started">Getting Started</Link> - Installation and
-              setup guide
+              <Link to="/quick-setup">Quick Setup</Link> - Get up and running in minutes
             </li>
             <li>
-              <Link to="/annotations">Annotations</Link> - Learn about decorators and
-              annotations
+              <Link to="/core-annotations">Core Annotations</Link> - Learn about CrudX annotations
             </li>
             <li>
-              <Link to="/entities">Entities</Link> - Working with data models
+              <Link to="/base-entities">Base Entities</Link> - Working with JPA entities
             </li>
             <li>
-              <Link to="/rest-endpoints">REST Endpoints</Link> - Building RESTful APIs
+              <Link to="/rest-endpoints">REST Endpoints</Link> - Understanding generated APIs
             </li>
           </ul>
         </section>
 
         <Pagination
-          next={{ title: 'Getting Started', path: '/getting-started' }}
+          next={{ title: 'Quick Setup', path: '/quick-setup' }}
         />
       </div>
 
