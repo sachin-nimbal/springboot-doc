@@ -12,11 +12,11 @@ interface SearchResult {
 
 // Mock search data - in production, this would come from a search index
 const searchData: SearchResult[] = [
-  { title: 'Overview', path: '/overview', excerpt: 'Get started with the documentation' },
-  { title: 'Getting Started', path: '/getting-started', excerpt: 'Quick start guide and installation' },
-  { title: 'Annotations', path: '/annotations', excerpt: 'Learn about annotations and decorators' },
-  { title: 'Entities', path: '/entities', excerpt: 'Working with entities and models' },
-  { title: 'REST Endpoints', path: '/rest-endpoints', excerpt: 'API endpoints and HTTP methods' },
+  { title: 'Overview', path: '/overview', excerpt: 'Introduction to CrudX Framework' },
+  { title: 'Quick Setup', path: '/quick-setup', excerpt: 'Get up and running in minutes' },
+  { title: 'Core Annotations', path: '/core-annotations', excerpt: 'Learn about CrudX annotations' },
+  { title: 'Base Entities', path: '/base-entities', excerpt: 'Working with JPA entities' },
+  { title: 'REST Endpoints', path: '/rest-endpoints', excerpt: 'Auto-generated API endpoints' },
 ];
 
 interface SearchBoxProps {

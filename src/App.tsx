@@ -6,9 +6,9 @@ import Sidebar from './components/Sidebar';
 import MobileDrawer from './components/MobileDrawer';
 import Footer from './components/Footer';
 import Overview from './pages/Overview';
-import GettingStarted from './pages/GettingStarted';
-import Annotations from './pages/Annotations';
-import Entities from './pages/Entities';
+import QuickSetup from './pages/QuickSetup';
+import CoreAnnotations from './pages/CoreAnnotations';
+import BaseEntities from './pages/BaseEntities';
 import RestEndpoints from './pages/RestEndpoints';
 import { useTheme } from './hooks/useTheme';
 
@@ -83,9 +83,9 @@ function App() {
               <Routes>
                 <Route path="/" element={<Navigate to="/overview" replace />} />
                 <Route path="/overview" element={<Overview />} />
-                <Route path="/getting-started" element={<GettingStarted />} />
-                <Route path="/annotations" element={<Annotations />} />
-                <Route path="/entities" element={<Entities />} />
+                <Route path="/quick-setup" element={<QuickSetup />} />
+                <Route path="/core-annotations" element={<CoreAnnotations />} />
+                <Route path="/base-entities" element={<BaseEntities />} />
                 <Route path="/rest-endpoints" element={<RestEndpoints />} />
               </Routes>
             </motion.div>

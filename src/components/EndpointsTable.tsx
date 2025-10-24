@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Badge from './Badge';
 import CodeBlock from './CodeBlock';
 import { copyToClipboard } from '../utils/clipboard';
 import { cn } from '../utils/cn';
+import endpointsData from '../data/endpoints.json';
 
 interface Endpoint {
   method: string;
@@ -17,21 +18,25 @@ interface Endpoint {
 }
 
 interface EndpointsTableProps {
-  endpoints: Endpoint[];
   className?: string;
 }
 
-const methodColors: Record<string, 'success' | 'info' | 'warning' | 'error'> = {
-  GET: 'success',
-  POST: 'info',
-  PUT: 'warning',
-  DELETE: 'error',
-  PATCH: 'info',
+const methodColors: Record<string, string> = {
+  GET: 'method-get',
+  POST: 'method-post',
+  PUT: 'method-put',
+  DELETE: 'method-delete',
+  PATCH: 'method-patch',
 };
 
-export default function EndpointsTable({ endpoints, className }: EndpointsTableProps) {
+export default function EndpointsTable({ className }: EndpointsTableProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
+
+  useEffect(() => {
+    setEndpoints(endpointsData as Endpoint[]);
+  }, []);
 
   const handleCopyCurl = async (curl: string, index: number) => {
     const success = await copyToClipboard(curl);
@@ -84,9 +89,9 @@ export default function EndpointsTable({ endpoints, className }: EndpointsTableP
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant={methodColors[endpoint.method] || 'default'}>
+                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${methodColors[endpoint.method] || 'bg-gray-100 text-gray-800'}`}>
                       {endpoint.method}
-                    </Badge>
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <code className="text-sm font-mono">{endpoint.path}</code>

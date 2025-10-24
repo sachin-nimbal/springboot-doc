@@ -1,22 +1,27 @@
 import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X, FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
+import { X, BookOpen, Rocket, Tag, Database, Zap } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 const navigation = [
   {
     title: 'Getting Started',
     items: [
-      { title: 'Overview', path: '/overview', icon: FileText },
-      { title: 'Getting Started', path: '/getting-started', icon: Rocket },
+      { title: 'Overview', path: '/overview', icon: BookOpen },
+      { title: 'Quick Setup', path: '/quick-setup', icon: Rocket },
     ],
   },
   {
-    title: 'Core Concepts',
+    title: 'Core Annotations',
     items: [
-      { title: 'Annotations', path: '/annotations', icon: Tag },
-      { title: 'Entities', path: '/entities', icon: Database },
+      { title: 'Core Annotations', path: '/core-annotations', icon: Tag },
+      { title: 'Base Entities', path: '/base-entities', icon: Database },
+    ],
+  },
+  {
+    title: 'API Reference',
+    items: [
       { title: 'REST Endpoints', path: '/rest-endpoints', icon: Zap },
     ],
   },

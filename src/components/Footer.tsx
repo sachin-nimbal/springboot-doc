@@ -7,13 +7,13 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Copyright */}
           <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Premium Docs. All rights reserved.
+            © {new Date().getFullYear()} CrudX Framework. All rights reserved.
           </div>
 
           {/* Links */}
           <div className="flex items-center gap-6">
             <a
-              href="https://github.com"
+              href="https://github.com/sachinnimbal/crudx-framework"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors focus-ring rounded"
