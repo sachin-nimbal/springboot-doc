@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
+import { MagnifyingGlassIcon as Search, XMarkIcon as X } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';

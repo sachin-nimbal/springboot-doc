@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Shield, Code, Sparkles } from 'lucide-react';
+import { ArrowRightIcon as ArrowRight, BoltIcon as Zap, ShieldCheckIcon as Shield, CodeBracketIcon as Code, SparklesIcon as Sparkles } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 import Badge from '../components/Badge';

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Menu, Search, Command } from 'lucide-react';
+import { Bars3Icon as Menu, MagnifyingGlassIcon as Search, CommandLineIcon as Command } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import SearchBox from './SearchBox';

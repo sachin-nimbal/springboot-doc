@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { ClipboardIcon as Copy, CheckIcon as Check } from '@heroicons/react/24/outline';
 import { copyToClipboard } from '../utils/clipboard';
 import { cn } from '../utils/cn';
 

@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
+import { DocumentTextIcon as FileText, RocketLaunchIcon as Rocket, TagIcon as Tag, CircleStackIcon as Database, BoltIcon as Zap } from '@heroicons/react/24/outline';
 import { cn } from '../utils/cn';
 
 const navigation = [

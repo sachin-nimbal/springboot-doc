@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Terminal, PackageCheck, Play } from 'lucide-react';
+import { CommandLineIcon as Terminal, CheckBadgeIcon as PackageCheck, PlayCircleIcon as Play } from '@heroicons/react/24/outline';
 import CodeBlock from '../components/CodeBlock';
 import Alert from '../components/Alert';
 import Badge from '../components/Badge';

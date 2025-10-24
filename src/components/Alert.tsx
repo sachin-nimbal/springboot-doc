@@ -1,5 +1,5 @@
 import { cn } from '../utils/cn';
-import { Info, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { InformationCircleIcon as Info, CheckCircleIcon as CheckCircle, ExclamationTriangleIcon as AlertTriangle, XCircleIcon as XCircle } from '@heroicons/react/24/outline';
 
 interface AlertProps {
   children: React.ReactNode;

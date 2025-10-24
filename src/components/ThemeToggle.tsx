@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'lucide-react';
+import { MoonIcon as Moon, SunIcon as Sun } from '@heroicons/react/24/outline';
 import { useTheme } from '../hooks/useTheme';
 import { motion } from 'framer-motion';
 

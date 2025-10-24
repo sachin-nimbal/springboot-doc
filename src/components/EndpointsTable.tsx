@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
+import { ChevronDownIcon as ChevronDown, ChevronRightIcon as ChevronRight, ClipboardIcon as Copy, CheckIcon as Check } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import Badge from './Badge';
 import CodeBlock from './CodeBlock';

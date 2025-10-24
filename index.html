@@ -2,9 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>springboot-doc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Premium Docs – modern, responsive documentation template with React, TypeScript, and Tailwind CSS." />
+    <meta name="theme-color" content="#4f46e5" />
+    <link rel="icon" href="/vite.svg" />
+    <link rel="apple-touch-icon" href="/vite.svg" />
+    <title>Premium Docs</title>
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('theme-dark');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === '1' || (stored !== '' && stored !== '0' && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

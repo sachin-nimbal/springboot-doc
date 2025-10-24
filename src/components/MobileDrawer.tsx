@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X, FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
+import { XMarkIcon as X, DocumentTextIcon as FileText, RocketLaunchIcon as Rocket, TagIcon as Tag, CircleStackIcon as Database, BoltIcon as Zap } from '@heroicons/react/24/outline';
 import { cn } from '../utils/cn';
 
 const navigation = [
