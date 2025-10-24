@@ -1,5 +1,5 @@
-import { useScrollSpy } from '../hooks/useScrollSpy';
-import { cn } from '../utils/cn';
+import { useScrollSpy } from '@/hooks/useScrollSpy';
+import { cn } from '@/utils/cn';
 
 interface TOCItem {
   id: string;
@@ -12,17 +12,20 @@ interface TOCProps {
   className?: string;
 }
 
+/**
+ * Table of Contents component with scroll spy
+ * Highlights current section and provides quick navigation
+ */
 export default function TOC({ items, className }: TOCProps) {
-  const activeId = useScrollSpy(
-    items.map((item) => item.id),
-    150
-  );
+  // Get IDs for scroll spy
+  const selectors = items.map((item) => `#${item.id}`);
+  const activeId = useScrollSpy(selectors, 100);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100;
+      const offset = 80; // Account for fixed header
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
 
@@ -30,32 +33,46 @@ export default function TOC({ items, className }: TOCProps) {
         top: offsetPosition,
         behavior: 'smooth',
       });
+
+      // Update URL hash without triggering scroll
+      window.history.pushState(null, '', `#${id}`);
     }
   };
 
+  if (items.length === 0) {
+    return null;
+  }
+
   return (
-    <nav
-      aria-label="Table of contents"
-      className={cn('space-y-2', className)}
-    >
-      <h4 className="text-sm font-semibold mb-4">On this page</h4>
+    <nav className={cn('space-y-1', className)} aria-label="Table of contents">
+      <h4 className="font-semibold text-foreground mb-4">On this page</h4>
       <ul className="space-y-2 text-sm">
-        {items.map((item) => (
-          <li key={item.id} style={{ paddingLeft: `${(item.level - 2) * 12}px` }}>
-            <a
-              href={`#${item.id}`}
-              onClick={(e) => handleClick(e, item.id)}
-              className={cn(
-                'block py-1 transition-colors border-l-2 pl-3 focus-ring rounded',
-                activeId === item.id
-                  ? 'border-primary text-primary font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-              )}
+        {items.map((item) => {
+          const isActive = activeId === item.id;
+          return (
+            <li
+              key={item.id}
+              className={cn('transition-all', {
+                'pl-0': item.level === 2,
+                'pl-4': item.level === 3,
+                'pl-8': item.level === 4,
+              })}
             >
-              {item.title}
-            </a>
-          </li>
-        ))}
+              <a
+                href={`#${item.id}`}
+                onClick={(e) => handleClick(e, item.id)}
+                className={cn(
+                  'block py-1 transition-colors hover:text-foreground border-l-2',
+                  isActive
+                    ? 'border-primary text-primary font-medium'
+                    : 'border-transparent text-muted-foreground'
+                )}
+              >
+                <span className="pl-3">{item.title}</span>
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

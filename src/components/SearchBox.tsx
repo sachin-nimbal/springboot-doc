@@ -1,172 +1,163 @@
-import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { cn } from '../utils/cn';
-
-interface SearchResult {
-  title: string;
-  path: string;
-  excerpt: string;
-}
-
-// Mock search data - in production, this would come from a search index
-const searchData: SearchResult[] = [
-  { title: 'Overview', path: '/overview', excerpt: 'Get started with the documentation' },
-  { title: 'Getting Started', path: '/getting-started', excerpt: 'Quick start guide and installation' },
-  { title: 'Annotations', path: '/annotations', excerpt: 'Learn about annotations and decorators' },
-  { title: 'Entities', path: '/entities', excerpt: 'Working with entities and models' },
-  { title: 'REST Endpoints', path: '/rest-endpoints', excerpt: 'API endpoints and HTTP methods' },
-];
+import { cn } from '@/utils/cn';
 
 interface SearchBoxProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+/**
+ * SearchBox component - modal search interface
+ * Activated by Cmd/Ctrl+K keyboard shortcut
+ */
 export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
 
+  // Focus input when opened
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isOpen]);
 
+  // Reset query when closed
   useEffect(() => {
-    if (query.trim()) {
-      const filtered = searchData.filter(
-        (item) =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.excerpt.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
-      setSelectedIndex(0);
-    } else {
-      setResults([]);
-    }
-  }, [query]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % results.length);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
-      navigate(results[selectedIndex].path);
-      onClose();
+    if (!isOpen) {
       setQuery('');
     }
-  };
+  }, [isOpen]);
 
-  const handleSelect = (path: string) => {
-    navigate(path);
-    onClose();
-    setQuery('');
-  };
+  // Close on escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-      />
+  const searchModal = (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
+            aria-hidden="true"
+          />
 
-      {/* Search Modal */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4"
-      >
-        <div className="bg-background border border-border rounded-lg shadow-2xl overflow-hidden">
-          {/* Search Input */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-            <Search className="w-5 h-5 text-muted-foreground" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Search documentation..."
-              className="flex-1 bg-transparent outline-none text-sm"
-              aria-label="Search documentation"
-            />
-            <button
-              onClick={onClose}
-              className="p-1 hover:bg-accent rounded focus-ring"
-              aria-label="Close search"
+          {/* Modal */}
+          <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[20vh]">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-2xl"
             >
-              <X className="w-4 h-4" />
-            </button>
+              <div className="overflow-hidden rounded-lg border border-border bg-background shadow-2xl">
+                {/* Search Input */}
+                <div className="flex items-center border-b border-border px-4">
+                  <MagnifyingGlassIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search documentation..."
+                    className="w-full bg-transparent px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none"
+                    aria-label="Search"
+                  />
+                  <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-border bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
+                    ESC
+                  </kbd>
+                </div>
+
+                {/* Search Results */}
+                <div className="max-h-[60vh] overflow-y-auto p-4">
+                  {query.length > 0 ? (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">
+                        Search functionality is a placeholder. In production, this would query your documentation content.
+                      </p>
+                      <div className="rounded-lg border border-border p-4 hover:bg-accent transition-colors cursor-pointer">
+                        <h4 className="font-medium text-foreground">Example Result</h4>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Matching content for "{query}"...
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <MagnifyingGlassIcon className="mx-auto h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
+                      <p className="mt-4 text-sm text-muted-foreground">
+                        Start typing to search documentation
+                      </p>
+                      <div className="mt-6 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <kbd className="rounded border border-border bg-muted px-2 py-1">↑↓</kbd>
+                          Navigate
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <kbd className="rounded border border-border bg-muted px-2 py-1">↵</kbd>
+                          Select
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <kbd className="rounded border border-border bg-muted px-2 py-1">ESC</kbd>
+                          Close
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           </div>
+        </>
+      )}
+    </AnimatePresence>
+  );
 
-          {/* Results */}
-          <AnimatePresence>
-            {results.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="max-h-96 overflow-y-auto scrollbar-thin"
-              >
-                {results.map((result, index) => (
-                  <button
-                    key={result.path}
-                    onClick={() => handleSelect(result.path)}
-                    className={cn(
-                      'w-full text-left px-4 py-3 hover:bg-accent transition-colors',
-                      index === selectedIndex && 'bg-accent'
-                    )}
-                  >
-                    <div className="font-medium text-sm mb-1">{result.title}</div>
-                    <div className="text-xs text-muted-foreground">{result.excerpt}</div>
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+  return createPortal(searchModal, document.body);
+}
 
-          {/* No results */}
-          {query && results.length === 0 && (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No results found for "{query}"
-            </div>
-          )}
+interface SearchButtonProps {
+  onClick: () => void;
+  className?: string;
+}
 
-          {/* Help text */}
-          {!query && (
-            <div className="px-4 py-3 text-xs text-muted-foreground border-t border-border flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">↑</kbd>
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">↓</kbd>
-                <span>to navigate</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">↵</kbd>
-                <span>to select</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">esc</kbd>
-                <span>to close</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </motion.div>
-    </>
+/**
+ * SearchButton component - trigger for search modal
+ * Shows keyboard shortcut hint
+ */
+export function SearchButton({ onClick, className }: SearchButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors',
+        className
+      )}
+      aria-label="Search documentation"
+    >
+      <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
+      <span className="hidden sm:inline">Search...</span>
+      <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+        <span className="text-xs">⌘</span>K
+      </kbd>
+    </button>
   );
 }

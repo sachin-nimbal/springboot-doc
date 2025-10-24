@@ -1,46 +1,64 @@
+import { useEffect, useState } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
-import { useTheme } from '../hooks/useTheme';
-import { cn } from '../utils/cn';
+import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/utils/cn';
 
 interface SyntaxHighlighterProps {
   code: string;
   language: string;
   showLineNumbers?: boolean;
+  className?: string;
 }
 
+/**
+ * SyntaxHighlighter component using prism-react-renderer
+ * Supports light and dark themes with line numbers
+ */
 export default function SyntaxHighlighter({
   code,
   language,
-  showLineNumbers = true,
+  showLineNumbers = false,
+  className,
 }: SyntaxHighlighterProps) {
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <pre className={cn('overflow-x-auto rounded-lg bg-muted p-4', className)}>
+        <code>{code}</code>
+      </pre>
+    );
+  }
+
+  const prismTheme = theme === 'dark' ? themes.vsDark : themes.vsLight;
 
   return (
-    <Highlight
-      theme={theme === 'dark' ? themes.nightOwl : themes.github}
-      code={code.trim()}
-      language={language as any}
-    >
-      {({ className, style, tokens, getLineProps, getTokenProps }) => (
+    <Highlight theme={prismTheme} code={code.trim()} language={language}>
+      {({ className: highlightClassName, style, tokens, getLineProps, getTokenProps }) => (
         <pre
           className={cn(
-            className,
-            'overflow-x-auto p-4 text-sm scrollbar-thin bg-muted/30'
+            'overflow-x-auto rounded-lg p-4 text-sm',
+            highlightClassName,
+            className
           )}
           style={style}
         >
           {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line })} className="table-row">
+            <div key={i} {...getLineProps({ line })}>
               {showLineNumbers && (
-                <span className="table-cell pr-4 text-right select-none text-muted-foreground/50 w-8">
+                <span className="mr-4 inline-block w-8 select-none text-right opacity-40">
                   {i + 1}
                 </span>
               )}
-              <span className="table-cell">
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
-                ))}
-              </span>
+              {line.map((token, key) => (
+                <span key={key} {...getTokenProps({ token })} />
+              ))}
             </div>
           ))}
         </pre>

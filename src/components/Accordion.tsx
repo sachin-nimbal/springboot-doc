@@ -1,72 +1,134 @@
-import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../utils/cn';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { cn } from '@/utils/cn';
 
-interface AccordionItem {
-  id: string;
-  title: string;
-  content: React.ReactNode;
+interface AccordionContextValue {
+  openItems: string[];
+  toggleItem: (value: string) => void;
+  type: 'single' | 'multiple';
 }
 
+const AccordionContext = createContext<AccordionContextValue | undefined>(undefined);
+
 interface AccordionProps {
-  items: AccordionItem[];
-  defaultOpen?: string[];
+  children: ReactNode;
+  type?: 'single' | 'multiple';
+  defaultValue?: string | string[];
   className?: string;
 }
 
-export default function Accordion({ items, defaultOpen = [], className }: AccordionProps) {
-  const [openItems, setOpenItems] = useState<string[]>(defaultOpen);
+/**
+ * Accordion component for collapsible content sections
+ * Supports single or multiple open items
+ */
+export default function Accordion({ 
+  children, 
+  type = 'single', 
+  defaultValue = [],
+  className 
+}: AccordionProps) {
+  const [openItems, setOpenItems] = useState<string[]>(
+    Array.isArray(defaultValue) ? defaultValue : defaultValue ? [defaultValue] : []
+  );
 
-  const toggleItem = (id: string) => {
-    setOpenItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const toggleItem = (value: string) => {
+    if (type === 'single') {
+      setOpenItems(openItems.includes(value) ? [] : [value]);
+    } else {
+      setOpenItems(
+        openItems.includes(value)
+          ? openItems.filter((item) => item !== value)
+          : [...openItems, value]
+      );
+    }
   };
 
   return (
-    <div className={cn('space-y-2', className)}>
-      {items.map((item) => {
-        const isOpen = openItems.includes(item.id);
+    <AccordionContext.Provider value={{ openItems, toggleItem, type }}>
+      <div className={cn('w-full', className)}>
+        {children}
+      </div>
+    </AccordionContext.Provider>
+  );
+}
 
-        return (
-          <div
-            key={item.id}
-            className="border border-border rounded-lg overflow-hidden"
-          >
-            <button
-              onClick={() => toggleItem(item.id)}
-              aria-expanded={isOpen}
-              aria-controls={`accordion-content-${item.id}`}
-              className="w-full flex items-center justify-between px-4 py-3 text-left font-medium hover:bg-accent transition-colors focus-ring"
-            >
-              <span>{item.title}</span>
-              <motion.div
-                animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronDown className="w-4 h-4" />
-              </motion.div>
-            </button>
+interface AccordionItemProps {
+  children: ReactNode;
+  value: string;
+  className?: string;
+}
 
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  id={`accordion-content-${item.id}`}
-                >
-                  <div className="px-4 py-3 border-t border-border text-sm text-muted-foreground">
-                    {item.content}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      })}
+export function AccordionItem({ children, value, className }: AccordionItemProps) {
+  const context = useContext(AccordionContext);
+  if (!context) throw new Error('AccordionItem must be used within Accordion');
+
+  const isOpen = context.openItems.includes(value);
+
+  return (
+    <div
+      data-state={isOpen ? 'open' : 'closed'}
+      className={cn('border-b border-border', className)}
+    >
+      {children}
+    </div>
+  );
+}
+
+interface AccordionTriggerProps {
+  children: ReactNode;
+  value: string;
+  className?: string;
+}
+
+export function AccordionTrigger({ children, value, className }: AccordionTriggerProps) {
+  const context = useContext(AccordionContext);
+  if (!context) throw new Error('AccordionTrigger must be used within Accordion');
+
+  const isOpen = context.openItems.includes(value);
+
+  return (
+    <button
+      onClick={() => context.toggleItem(value)}
+      aria-expanded={isOpen}
+      className={cn(
+        'flex w-full items-center justify-between py-4 font-medium transition-all hover:text-primary text-left',
+        className
+      )}
+    >
+      {children}
+      <ChevronDownIcon
+        className={cn(
+          'h-5 w-5 shrink-0 transition-transform duration-200',
+          isOpen ? 'rotate-180' : ''
+        )}
+        aria-hidden="true"
+      />
+    </button>
+  );
+}
+
+interface AccordionContentProps {
+  children: ReactNode;
+  value: string;
+  className?: string;
+}
+
+export function AccordionContent({ children, value, className }: AccordionContentProps) {
+  const context = useContext(AccordionContext);
+  if (!context) throw new Error('AccordionContent must be used within Accordion');
+
+  const isOpen = context.openItems.includes(value);
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className={cn(
+        'overflow-hidden text-sm transition-all animate-slide-in-top',
+        className
+      )}
+    >
+      <div className="pb-4 pt-0">{children}</div>
     </div>
   );
 }

@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Badge from './Badge';
+import { MethodBadge } from './Badge';
 import CodeBlock from './CodeBlock';
-import { copyToClipboard } from '../utils/clipboard';
-import { cn } from '../utils/cn';
+import { cn } from '@/utils/cn';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface Endpoint {
-  method: string;
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   path: string;
   description: string;
   example?: {
@@ -21,136 +19,97 @@ interface EndpointsTableProps {
   className?: string;
 }
 
-const methodColors: Record<string, 'success' | 'info' | 'warning' | 'error'> = {
-  GET: 'success',
-  POST: 'info',
-  PUT: 'warning',
-  DELETE: 'error',
-  PATCH: 'info',
-};
-
+/**
+ * EndpointsTable component for displaying API endpoints
+ * Shows method, path, description, and expandable examples
+ */
 export default function EndpointsTable({ endpoints, className }: EndpointsTableProps) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
-  const handleCopyCurl = async (curl: string, index: number) => {
-    const success = await copyToClipboard(curl);
-    if (success) {
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), 2000);
+  const toggleRow = (index: number) => {
+    const newExpanded = new Set(expandedRows);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
     }
+    setExpandedRows(newExpanded);
   };
 
   return (
-    <div className={cn('border border-border rounded-lg overflow-hidden', className)}>
+    <div className={cn('overflow-hidden rounded-lg border border-border', className)}>
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border">
-            <tr>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-12"></th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-border bg-muted/50">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">
                 Method
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">
                 Endpoint
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">
                 Description
               </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
-                Action
-              </th>
+              <th className="w-10 px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
-            {endpoints.map((endpoint, index) => (
-              <>
-                <tr key={index} className="hover:bg-accent/30 transition-colors">
-                  <td className="px-4 py-3">
-                    {endpoint.example && (
-                      <button
-                        onClick={() =>
-                          setExpandedIndex(expandedIndex === index ? null : index)
-                        }
-                        className="p-1 hover:bg-accent rounded focus-ring"
-                        aria-label={expandedIndex === index ? 'Collapse' : 'Expand'}
-                      >
-                        {expandedIndex === index ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={methodColors[endpoint.method] || 'default'}>
-                      {endpoint.method}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <code className="text-sm font-mono">{endpoint.path}</code>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {endpoint.description}
-                  </td>
-                  <td className="px-4 py-3">
-                    {endpoint.example && (
-                      <button
-                        onClick={() => handleCopyCurl(endpoint.example!.curl, index)}
-                        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors focus-ring rounded px-2 py-1"
-                      >
-                        {copiedIndex === index ? (
-                          <>
-                            <Check className="w-3 h-3" />
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3" />
-                            cURL
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-                <AnimatePresence>
-                  {expandedIndex === index && endpoint.example && (
+          <tbody>
+            {endpoints.map((endpoint, index) => {
+              const isExpanded = expandedRows.has(index);
+              return (
+                <>
+                  <tr
+                    key={index}
+                    className="border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => endpoint.example && toggleRow(index)}
+                  >
+                    <td className="px-4 py-3 align-top">
+                      <MethodBadge method={endpoint.method} />
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <code className="text-sm font-mono text-primary">
+                        {endpoint.path}
+                      </code>
+                    </td>
+                    <td className="px-4 py-3 align-top text-sm text-foreground/90">
+                      {endpoint.description}
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      {endpoint.example && (
+                        <ChevronDownIcon
+                          className={cn(
+                            'h-5 w-5 text-muted-foreground transition-transform duration-200',
+                            isExpanded ? 'rotate-180' : ''
+                          )}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </td>
+                  </tr>
+                  {isExpanded && endpoint.example && (
                     <tr>
-                      <td colSpan={5} className="p-0">
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="p-4 bg-muted/20 space-y-4">
-                            <div>
-                              <h4 className="text-sm font-semibold mb-2">Request</h4>
-                              <CodeBlock
-                                code={endpoint.example.curl}
-                                language="bash"
-                                showLineNumbers={false}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-semibold mb-2">Response</h4>
-                              <CodeBlock
-                                code={endpoint.example.response}
-                                language="json"
-                                showLineNumbers={false}
-                              />
-                            </div>
+                      <td colSpan={4} className="bg-muted/20 px-4 py-4">
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="text-sm font-semibold text-foreground mb-2">
+                              Request Example
+                            </h4>
+                            <CodeBlock code={endpoint.example.curl} language="bash" />
                           </div>
-                        </motion.div>
+                          <div>
+                            <h4 className="text-sm font-semibold text-foreground mb-2">
+                              Response
+                            </h4>
+                            <CodeBlock code={endpoint.example.response} language="json" />
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   )}
-                </AnimatePresence>
-              </>
-            ))}
+                </>
+              );
+            })}
           </tbody>
         </table>
       </div>
