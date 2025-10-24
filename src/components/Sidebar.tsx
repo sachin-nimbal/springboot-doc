@@ -7,14 +7,15 @@ const navigation = [
     title: 'Getting Started',
     items: [
       { title: 'Overview', path: '/overview', icon: FileText },
+      { title: 'Quick Setup', path: '/quick-setup', icon: Rocket },
       { title: 'Getting Started', path: '/getting-started', icon: Rocket },
     ],
   },
   {
     title: 'Core Concepts',
     items: [
-      { title: 'Annotations', path: '/annotations', icon: Tag },
-      { title: 'Entities', path: '/entities', icon: Database },
+      { title: 'Core Annotations', path: '/core-annotations', icon: Tag },
+      { title: 'Base Entities', path: '/base-entities', icon: Database },
       { title: 'REST Endpoints', path: '/rest-endpoints', icon: Zap },
     ],
   },
