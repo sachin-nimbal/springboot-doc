@@ -24,12 +24,12 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: (_key: string) => null,
-  setItem: (_key: string, _value: string) => {},
-  removeItem: (_key: string) => {},
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
   clear: () => {},
   length: 0,
-  key: (_index: number) => null,
+  key: () => null,
 };
 
 globalThis.localStorage = localStorageMock as Storage;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ClipboardIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { copyToClipboard } from '../utils/clipboard';
 import { cn } from '../utils/cn';

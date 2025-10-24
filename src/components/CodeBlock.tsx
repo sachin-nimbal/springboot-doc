@@ -1,4 +1,3 @@
-import React from 'react';
 import { Highlight } from 'prism-react-renderer';
 import { useTheme } from '../hooks/useTheme';
 import { CopyButton } from './CopyButton';

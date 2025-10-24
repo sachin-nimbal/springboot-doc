@@ -19,7 +19,7 @@ export default function SyntaxHighlighter({
     <Highlight
       theme={theme === 'dark' ? themes.nightOwl : themes.github}
       code={code.trim()}
-      language={language as any}
+      language={language as 'javascript'}
     >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre

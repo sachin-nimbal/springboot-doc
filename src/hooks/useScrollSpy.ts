@@ -30,7 +30,7 @@ export function useScrollSpy(selectors: string[], options?: IntersectionObserver
     return () => {
       elements.forEach((element) => observer.unobserve(element));
     };
-  }, [selectors]);
+  }, [selectors, options]);
 
   return activeId;
 }

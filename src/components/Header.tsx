@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ThemeToggle } from './ThemeToggle';
 import { SearchBox } from './SearchBox';
-import { cn } from '../utils/cn';
 
 interface HeaderProps {
   onMobileMenuToggle: () => void;

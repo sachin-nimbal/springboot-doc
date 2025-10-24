@@ -1,171 +1,439 @@
-// import { Link } from 'react-router-dom';
-import CodeBlock from '../components/CodeBlock';
-import Alert from '../components/Alert';
-import Badge from '../components/Badge';
-import EndpointsTable from '../components/EndpointsTable';
-import Breadcrumbs from '../components/Breadcrumbs';
-import Pagination from '../components/Pagination';
-import TOC from '../components/TOC';
-import endpoints from '../data/endpoints.json';
+import { InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Alert, AlertDescription, AlertTitle } from '../components/Alert';
+import { CodeBlock } from '../components/CodeBlock';
+import { TOC } from '../components/TOC';
+import { Breadcrumbs } from '../components/Breadcrumbs';
+import { Pagination } from '../components/Pagination';
+import { EndpointsTable } from '../components/EndpointsTable';
 
 const tocItems = [
-  { id: 'introduction', title: 'Introduction', level: 2 },
-  { id: 'http-methods', title: 'HTTP Methods', level: 2 },
-  { id: 'available-endpoints', title: 'Available Endpoints', level: 2 },
-  { id: 'authentication', title: 'Authentication', level: 2 },
+  { id: 'overview', title: 'REST API Overview', level: 2 },
+  { id: 'endpoints', title: 'Generated Endpoints', level: 2 },
+  { id: 'pagination', title: 'Pagination & Sorting', level: 2 },
+  { id: 'filtering', title: 'Filtering & Search', level: 2 },
+  { id: 'error-handling', title: 'Error Handling', level: 2 },
+  { id: 'examples', title: 'Request Examples', level: 2 },
 ];
 
-export default function RestEndpoints() {
+const breadcrumbItems = [
+  { title: 'REST Endpoints' }
+];
+
+const paginationExample = `# Basic pagination
+GET /api/users?page=0&size=20
+
+# Sorting by single field
+GET /api/users?sort=name,asc
+
+# Sorting by multiple fields
+GET /api/users?sort=name,asc&sort=createdAt,desc
+
+# Combined pagination and sorting
+GET /api/users?page=1&size=10&sort=email,asc`;
+
+const filteringExample = `# Filter by exact match
+GET /api/users?email=john@example.com
+
+# Filter by multiple criteria
+GET /api/users?age=25&status=ACTIVE
+
+# Text search across searchable fields
+GET /api/users/search?q=john
+
+# Advanced filtering with operators
+GET /api/products?price_gte=100&price_lte=500
+GET /api/users?createdAt_after=2024-01-01
+GET /api/products?category_in=Electronics,Books`;
+
+const responseExample = `{
+  "content": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "age": 30,
+      "createdAt": "2024-01-15T10:30:00",
+      "updatedAt": "2024-01-20T14:45:00"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "age": 28,
+      "createdAt": "2024-01-16T09:15:00",
+      "updatedAt": "2024-01-16T09:15:00"
+    }
+  ],
+  "pageable": {
+    "sort": {
+      "sorted": true,
+      "unsorted": false,
+      "empty": false
+    },
+    "pageNumber": 0,
+    "pageSize": 20,
+    "offset": 0,
+    "paged": true,
+    "unpaged": false
+  },
+  "totalElements": 150,
+  "totalPages": 8,
+  "last": false,
+  "first": true,
+  "numberOfElements": 20,
+  "size": 20,
+  "number": 0,
+  "sort": {
+    "sorted": true,
+    "unsorted": false,
+    "empty": false
+  },
+  "empty": false
+}`;
+
+const errorResponseExample = `{
+  "timestamp": "2024-01-20T10:30:00.123Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "path": "/api/users",
+  "errors": [
+    {
+      "field": "email",
+      "code": "INVALID_FORMAT",
+      "message": "Invalid email format",
+      "rejectedValue": "invalid-email"
+    },
+    {
+      "field": "age",
+      "code": "OUT_OF_RANGE",
+      "message": "Age must be between 0 and 150",
+      "rejectedValue": 200
+    }
+  ]
+}`;
+
+const createUserExample = `# Create a new user
+curl -X POST "http://localhost:8080/api/users" \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": 30
+  }'`;
+
+const bulkOperationsExample = `# Bulk create users
+POST /api/users/batch
+Content-Type: application/json
+
+[
+  {
+    "name": "User 1",
+    "email": "user1@example.com",
+    "age": 25
+  },
+  {
+    "name": "User 2", 
+    "email": "user2@example.com",
+    "age": 30
+  }
+]
+
+# Bulk update users
+PUT /api/users/batch
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "name": "Updated User 1",
+    "age": 26
+  },
+  {
+    "id": 2,
+    "name": "Updated User 2",
+    "age": 31
+  }
+]
+
+# Bulk delete users
+DELETE /api/users/batch
+Content-Type: application/json
+
+[1, 2, 3, 4, 5]`;
+
+export function RestEndpoints() {
   return (
     <div className="flex gap-8">
-      <div className="flex-1 min-w-0">
-        <Breadcrumbs
-          items={[
-            { label: 'Core Concepts', path: '/overview' },
-            { label: 'REST Endpoints' },
-          ]}
-          className="mb-6"
-        />
+      <main className="flex-1 max-w-4xl">
+        <div className="space-y-8">
+          {/* Breadcrumbs */}
+          <Breadcrumbs items={breadcrumbItems} />
 
-        <div className="mb-8">
-          <Badge variant="info" className="mb-4">
-            API Reference
-          </Badge>
-          <h1 className="text-[clamp(2rem,4vw+1rem,3rem)] font-bold tracking-tight mb-4">
-            REST Endpoints
-          </h1>
-          <p className="text-[clamp(1rem,2vw+0.5rem,1.5rem)] text-muted-foreground">
-            Build powerful RESTful APIs with our intuitive endpoint system.
-          </p>
-        </div>
-
-        {/* Introduction */}
-        <section id="introduction" className="prose mb-12">
-          <h2>Introduction</h2>
-          <p>
-            Premium Docs makes it easy to build RESTful APIs with decorators and
-            TypeScript. Define your endpoints using method decorators and let the
-            framework handle routing, validation, and serialization.
-          </p>
-
-          <Alert variant="success" title="Auto Documentation">
-            All endpoints are automatically documented and can be exported to
-            OpenAPI/Swagger format.
-          </Alert>
-        </section>
-
-        {/* HTTP Methods */}
-        <section id="http-methods" className="prose mb-12">
-          <h2>HTTP Methods</h2>
-          <p>
-            Premium Docs supports all standard HTTP methods through dedicated
-            decorators:
-          </p>
-
-          <div className="not-prose">
-            <CodeBlock
-              code={`import { Controller, Get, Post, Put, Delete, Patch } from 'premium-docs';
-
-@Controller('/api/resources')
-export class ResourceController {
-  @Get()
-  findAll() {
-    return { data: [] };
-  }
-
-  @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return { data: { id } };
-  }
-
-  @Post()
-  create(@Body() data: CreateDto) {
-    return { success: true, data };
-  }
-
-  @Put('/:id')
-  update(@Param('id') id: string, @Body() data: UpdateDto) {
-    return { success: true, data };
-  }
-
-  @Patch('/:id')
-  partialUpdate(@Param('id') id: string, @Body() data: Partial<UpdateDto>) {
-    return { success: true, data };
-  }
-
-  @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return { success: true };
-  }
-}`}
-              language="typescript"
-            />
-          </div>
-        </section>
-
-        {/* Available Endpoints */}
-        <section id="available-endpoints" className="prose mb-12">
-          <h2>Available Endpoints</h2>
-          <p>
-            Here's a comprehensive list of available API endpoints. Click on any
-            endpoint to see example requests and responses:
-          </p>
-
-          <div className="not-prose my-6">
-            <EndpointsTable endpoints={endpoints} />
-          </div>
-        </section>
-
-        {/* Authentication */}
-        <section id="authentication" className="prose mb-12">
-          <h2>Authentication</h2>
-          <p>
-            Secure your endpoints with built-in authentication support. Premium Docs
-            supports multiple authentication strategies:
-          </p>
-
-          <h3>Bearer Token Authentication</h3>
-          <div className="not-prose">
-            <CodeBlock
-              code={`import { Controller, Get, UseGuards } from 'premium-docs';
-import { AuthGuard } from '@premium-docs/auth';
-
-@Controller('/api/protected')
-@UseGuards(AuthGuard)
-export class ProtectedController {
-  @Get()
-  getProtectedData() {
-    return { secret: 'This is protected data' };
-  }
-}`}
-              language="typescript"
-            />
+          {/* Header */}
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold tracking-tight">REST API Endpoints</h1>
+            <p className="text-xl text-muted-foreground">
+              Complete reference for all REST endpoints automatically generated by CrudX Framework. 
+              Learn about request formats, response structures, and advanced features.
+            </p>
           </div>
 
-          <h3>Making Authenticated Requests</h3>
-          <div className="not-prose">
-            <CodeBlock
-              code={`curl -X GET https://api.example.com/api/protected \\
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \\
-  -H "Content-Type: application/json"`}
+          {/* Overview */}
+          <section id="overview" className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">REST API Overview</h2>
+            <p className="text-muted-foreground">
+              CrudX automatically generates a comprehensive REST API for each entity annotated with 
+              <code>@CrudXEntity</code>. The generated endpoints follow REST conventions and include 
+              advanced features like pagination, sorting, filtering, and bulk operations.
+            </p>
+
+            <Alert>
+              <InformationCircleIcon className="h-4 w-4" />
+              <AlertTitle>Base URL Structure</AlertTitle>
+              <AlertDescription>
+                All endpoints follow the pattern: <code>{'{baseUrl}'}/{'{basePath}'}/{'{entityPath}'}</code>
+                <br />
+                Example: <code>http://localhost:8080/api/users</code>
+              </AlertDescription>
+            </Alert>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-primary">6</div>
+                <div className="text-sm text-muted-foreground">Core Endpoints</div>
+              </div>
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-success">3</div>
+                <div className="text-sm text-muted-foreground">Bulk Operations</div>
+              </div>
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-warning">2</div>
+                <div className="text-sm text-muted-foreground">Search Endpoints</div>
+              </div>
+              <div className="text-center p-4 border rounded-lg">
+                <div className="text-2xl font-bold text-info">∞</div>
+                <div className="text-sm text-muted-foreground">Filter Combinations</div>
+              </div>
+            </div>
+          </section>
+
+          {/* Generated Endpoints */}
+          <section id="endpoints" className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Generated Endpoints</h2>
+            <p className="text-muted-foreground">
+              Here are all the REST endpoints automatically generated for each CrudX entity:
+            </p>
+
+            <EndpointsTable />
+          </section>
+
+          {/* Pagination & Sorting */}
+          <section id="pagination" className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Pagination & Sorting</h2>
+            <p className="text-muted-foreground">
+              All list endpoints support pagination and sorting out of the box. 
+              Use query parameters to control the page size, page number, and sort order.
+            </p>
+
+            <CodeBlock 
+              code={paginationExample}
               language="bash"
-              showLineNumbers={false}
+              title="Pagination & Sorting Examples"
             />
-          </div>
 
-          <Alert variant="warning" title="Security Best Practices">
-            Always use HTTPS in production and never commit API keys or tokens to
-            version control. Use environment variables for sensitive data.
-          </Alert>
-        </section>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Pagination Parameters</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 font-medium">Parameter</th>
+                      <th className="text-left py-2 font-medium">Type</th>
+                      <th className="text-left py-2 font-medium">Default</th>
+                      <th className="text-left py-2 font-medium">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b">
+                      <td className="py-2 font-mono">page</td>
+                      <td className="py-2">integer</td>
+                      <td className="py-2">0</td>
+                      <td className="py-2">Page number (0-based)</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2 font-mono">size</td>
+                      <td className="py-2">integer</td>
+                      <td className="py-2">20</td>
+                      <td className="py-2">Number of items per page</td>
+                    </tr>
+                    <tr className="border-b">
+                      <td className="py-2 font-mono">sort</td>
+                      <td className="py-2">string</td>
+                      <td className="py-2">-</td>
+                      <td className="py-2">Sort field and direction (field,asc|desc)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-        <Pagination
-          prev={{ title: 'Entities', path: '/entities' }}
-        />
-      </div>
+            <CodeBlock 
+              code={responseExample}
+              language="json"
+              title="Paginated Response Structure"
+            />
+          </section>
 
-      {/* Right Sidebar - TOC */}
-      <aside className="hidden xl:block w-64 flex-shrink-0">
+          {/* Filtering & Search */}
+          <section id="filtering" className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Filtering & Search</h2>
+            <p className="text-muted-foreground">
+              CrudX provides powerful filtering and search capabilities based on the field 
+              annotations in your entities. Fields marked as filterable or searchable 
+              automatically support various query operations.
+            </p>
+
+            <CodeBlock 
+              code={filteringExample}
+              language="bash"
+              title="Filtering & Search Examples"
+            />
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Filter Operators</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <h4 className="font-medium mb-2">Comparison Operators</h4>
+                  <div className="space-y-1 text-sm">
+                    <div><code>field_eq=value</code> - Equals (default)</div>
+                    <div><code>field_ne=value</code> - Not equals</div>
+                    <div><code>field_gt=value</code> - Greater than</div>
+                    <div><code>field_gte=value</code> - Greater than or equal</div>
+                    <div><code>field_lt=value</code> - Less than</div>
+                    <div><code>field_lte=value</code> - Less than or equal</div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2">String & Collection Operators</h4>
+                  <div className="space-y-1 text-sm">
+                    <div><code>field_like=value</code> - Contains (case-insensitive)</div>
+                    <div><code>field_starts=value</code> - Starts with</div>
+                    <div><code>field_ends=value</code> - Ends with</div>
+                    <div><code>field_in=val1,val2</code> - In list</div>
+                    <div><code>field_nin=val1,val2</code> - Not in list</div>
+                    <div><code>field_null=true</code> - Is null/not null</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Alert variant="warning">
+              <ExclamationTriangleIcon className="h-4 w-4" />
+              <AlertTitle>Performance Note</AlertTitle>
+              <AlertDescription>
+                Complex filters and text searches can impact performance on large datasets. 
+                Consider adding database indexes for frequently filtered fields and 
+                implementing search engines like Elasticsearch for full-text search.
+              </AlertDescription>
+            </Alert>
+          </section>
+
+          {/* Error Handling */}
+          <section id="error-handling" className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Error Handling</h2>
+            <p className="text-muted-foreground">
+              CrudX provides comprehensive error handling with detailed error messages, 
+              field-level validation errors, and proper HTTP status codes.
+            </p>
+
+            <CodeBlock 
+              code={errorResponseExample}
+              language="json"
+              title="Error Response Structure"
+            />
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Common HTTP Status Codes</h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <h4 className="font-medium mb-2 text-success">Success Codes</h4>
+                  <div className="space-y-1 text-sm">
+                    <div><code>200 OK</code> - Successful GET, PUT operations</div>
+                    <div><code>201 Created</code> - Successful POST operations</div>
+                    <div><code>204 No Content</code> - Successful DELETE operations</div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-medium mb-2 text-destructive">Error Codes</h4>
+                  <div className="space-y-1 text-sm">
+                    <div><code>400 Bad Request</code> - Validation errors</div>
+                    <div><code>401 Unauthorized</code> - Authentication required</div>
+                    <div><code>403 Forbidden</code> - Insufficient permissions</div>
+                    <div><code>404 Not Found</code> - Resource not found</div>
+                    <div><code>409 Conflict</code> - Unique constraint violation</div>
+                    <div><code>500 Internal Server Error</code> - Server error</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Request Examples */}
+          <section id="examples" className="space-y-4">
+            <h2 className="text-2xl font-semibold tracking-tight">Request Examples</h2>
+            <p className="text-muted-foreground">
+              Here are practical examples of how to interact with CrudX-generated APIs:
+            </p>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Creating Resources</h3>
+                <CodeBlock 
+                  code={createUserExample}
+                  language="bash"
+                  title="Create User Example"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Bulk Operations</h3>
+                <p className="text-muted-foreground text-sm mb-3">
+                  CrudX supports bulk operations for improved performance when dealing with multiple records:
+                </p>
+                <CodeBlock 
+                  code={bulkOperationsExample}
+                  language="bash"
+                  title="Bulk Operations Examples"
+                />
+              </div>
+            </div>
+
+            <Alert>
+              <InformationCircleIcon className="h-4 w-4" />
+              <AlertTitle>Authentication & Authorization</AlertTitle>
+              <AlertDescription>
+                Most endpoints require authentication. Include the <code>Authorization</code> header 
+                with a valid Bearer token. Access control is enforced based on the security 
+                configuration in your <code>@CrudXSecurity</code> annotations.
+              </AlertDescription>
+            </Alert>
+          </section>
+
+          {/* Pagination */}
+          <Pagination
+            previous={{
+              title: "Base Entities",
+              href: "/entities",
+              description: "Working with entity classes"
+            }}
+          />
+        </div>
+      </main>
+
+      {/* Table of Contents */}
+      <aside className="hidden xl:block w-64 shrink-0">
         <div className="sticky top-24">
           <TOC items={tocItems} />
         </div>

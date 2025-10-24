@@ -1,4 +1,3 @@
-import React from 'react';
 import { MethodBadge } from './Badge';
 import { CopyButton } from './CopyButton';
 import { Card, CardContent, CardHeader } from './Card';
@@ -11,15 +10,17 @@ interface Parameter {
   description: string;
 }
 
+interface RequestBody {
+  description: string;
+  required: boolean;
+}
+
 interface Endpoint {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   path: string;
   description: string;
   parameters?: Parameter[];
-  requestBody?: {
-    description: string;
-    required: boolean;
-  };
+  requestBody?: RequestBody;
   responses: Record<string, string>;
 }
 
@@ -28,7 +29,7 @@ interface EndpointsTableProps {
 }
 
 export function EndpointsTable({ className }: EndpointsTableProps) {
-  const endpoints = endpointsData.endpoints as Endpoint[];
+  const endpoints = endpointsData.endpoints as unknown as Endpoint[];
 
   const generateCurlCommand = (endpoint: Endpoint) => {
     let curl = `curl -X ${endpoint.method} "https://api.example.com${endpoint.path}"`;
@@ -77,7 +78,7 @@ export function EndpointsTable({ className }: EndpointsTableProps) {
                       </tr>
                     </thead>
                     <tbody>
-                      {endpoint.parameters.map((param, paramIndex) => (
+                      {endpoint.parameters.map((param: Parameter, paramIndex: number) => (
                         <tr key={paramIndex} className="border-b last:border-b-0">
                           <td className="py-2 font-mono text-xs">{param.name}</td>
                           <td className="py-2">
@@ -111,7 +112,7 @@ export function EndpointsTable({ className }: EndpointsTableProps) {
             <div>
               <h4 className="text-sm font-semibold mb-2">Responses</h4>
               <div className="space-y-2">
-                {Object.entries(endpoint.responses).map(([code, description]) => (
+                {Object.entries(endpoint.responses).map(([code, description]: [string, string]) => (
                   <div key={code} className="flex items-center gap-3">
                     <span className={cn(
                       "inline-flex items-center rounded px-2 py-1 text-xs font-medium",
