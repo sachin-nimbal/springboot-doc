@@ -1,93 +1,92 @@
-/* Typography styles with fluid sizing */
+/* Typography styles for documentation */
 
-.prose {
-  @apply text-foreground;
+/* Font families */
+.font-display {
+  font-family: 'Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
 }
 
-.prose h1 {
-  @apply text-[clamp(2rem,4vw+1rem,3rem)] font-bold tracking-tight mb-4 mt-8;
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
 }
 
-.prose h2 {
-  @apply text-[clamp(1.5rem,3vw+0.5rem,2.25rem)] font-semibold tracking-tight mb-3 mt-6;
+/* Heading styles with proper hierarchy */
+.heading-1 {
+  @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
 }
 
-.prose h3 {
-  @apply text-[clamp(1.25rem,2vw+0.5rem,1.875rem)] font-semibold tracking-tight mb-2 mt-4;
+.heading-2 {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
 }
 
-.prose h4 {
-  @apply text-[clamp(1.125rem,1.5vw+0.5rem,1.5rem)] font-semibold mb-2 mt-3;
+.heading-3 {
+  @apply text-2xl md:text-3xl font-semibold tracking-tight;
 }
 
-.prose p {
-  @apply text-[clamp(0.9375rem,1vw+0.5rem,1.125rem)] leading-relaxed mb-4 text-muted-foreground;
+.heading-4 {
+  @apply text-xl md:text-2xl font-semibold;
 }
 
-.prose ul,
-.prose ol {
-  @apply text-[clamp(0.9375rem,1vw+0.5rem,1.125rem)] leading-relaxed mb-4 ml-6 text-muted-foreground;
+.heading-5 {
+  @apply text-lg md:text-xl font-semibold;
 }
 
-.prose li {
-  @apply mb-2;
+/* Body text styles */
+.text-body {
+  @apply text-base leading-7 text-foreground/90;
 }
 
-.prose ul li {
-  @apply list-disc;
+.text-body-large {
+  @apply text-lg leading-8 text-foreground/90;
 }
 
-.prose ol li {
-  @apply list-decimal;
+.text-body-small {
+  @apply text-sm leading-6 text-foreground/80;
 }
 
-.prose code {
-  @apply text-sm font-mono bg-muted px-1.5 py-0.5 rounded;
-}
-
-.prose pre {
-  @apply text-sm font-mono bg-muted p-4 rounded-lg overflow-x-auto mb-4;
-}
-
-.prose blockquote {
-  @apply border-l-4 border-primary pl-4 italic text-muted-foreground mb-4;
-}
-
-.prose a {
-  @apply text-primary hover:underline;
-}
-
-.prose strong {
-  @apply font-semibold text-foreground;
-}
-
-.prose table {
-  @apply w-full border-collapse mb-4;
-}
-
-.prose th {
-  @apply text-left font-semibold border-b-2 border-border p-2;
-}
-
-.prose td {
-  @apply border-b border-border p-2;
-}
-
-/* Hero text */
-.hero-title {
-  @apply text-[clamp(2.5rem,5vw+1rem,4rem)] font-bold tracking-tight;
-}
-
-.hero-subtitle {
-  @apply text-[clamp(1rem,2vw+0.5rem,1.5rem)] text-muted-foreground;
-}
-
-/* Label text */
-.label-text {
-  @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
-}
-
-/* Monospace text */
-.mono {
+/* Code text styles */
+.text-code {
   @apply font-mono text-sm;
+}
+
+.text-code-inline {
+  @apply font-mono text-[0.875em] bg-muted px-1.5 py-0.5 rounded;
+}
+
+/* Link styles */
+.link {
+  @apply text-primary hover:text-primary/80 underline underline-offset-4 transition-colors;
+}
+
+.link-subtle {
+  @apply text-foreground/70 hover:text-foreground transition-colors;
+}
+
+/* Badge text */
+.text-badge {
+  @apply text-xs font-semibold uppercase tracking-wide;
+}
+
+/* Caption text */
+.text-caption {
+  @apply text-xs text-muted-foreground;
+}
+
+/* Display text for hero sections */
+.text-display {
+  @apply text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight;
+}
+
+/* Gradient text effect */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70;
+}
+
+/* Text balance for better readability */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Text pretty for optimal line breaks */
+.text-pretty {
+  text-wrap: pretty;
 }
