@@ -1,55 +1,115 @@
-import { NavLink } from 'react-router-dom';
-import { FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { cn } from '../utils/cn';
+import tocData from '../data/toc.json';
 
-const navigation = [
-  {
-    title: 'Getting Started',
-    items: [
-      { title: 'Overview', path: '/overview', icon: FileText },
-      { title: 'Getting Started', path: '/getting-started', icon: Rocket },
-    ],
-  },
-  {
-    title: 'Core Concepts',
-    items: [
-      { title: 'Annotations', path: '/annotations', icon: Tag },
-      { title: 'Entities', path: '/entities', icon: Database },
-      { title: 'REST Endpoints', path: '/rest-endpoints', icon: Zap },
-    ],
-  },
-];
+interface SidebarProps {
+  className?: string;
+}
 
-export default function Sidebar() {
+export function Sidebar({ className }: SidebarProps) {
+  const location = useLocation();
+
+  const isActiveLink = (href: string) => {
+    if (href === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(href);
+  };
+
   return (
-    <div className="py-6 px-4 space-y-6 scrollbar-thin">
-      {navigation.map((section) => (
-        <div key={section.title}>
-          <h3 className="label-text mb-2 px-3">{section.title}</h3>
-          <nav className="space-y-1">
-            {section.items.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors focus-ring',
-                      isActive
-                        ? 'bg-accent text-accent-foreground font-medium border-l-2 border-primary'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                    )
-                  }
-                >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span>{item.title}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
+    <aside className={cn("w-64 shrink-0", className)}>
+      <div className="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-6 pr-6">
+        <nav className="space-y-8">
+          {tocData.sections.map((section) => (
+            <div key={section.title}>
+              <h3 className="mb-3 text-sm font-semibold text-foreground">
+                {section.title}
+              </h3>
+              <ul className="space-y-1">
+                {section.items.map((item) => {
+                  const isActive = isActiveLink(item.href);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        to={item.href}
+                        className={cn(
+                          "group flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors",
+                          "hover:bg-muted hover:text-foreground",
+                          isActive
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        <div className="flex flex-col">
+                          <span>{item.title}</span>
+                          {item.description && (
+                            <span className="text-xs text-muted-foreground mt-0.5">
+                              {item.description}
+                            </span>
+                          )}
+                        </div>
+                        {isActive && (
+                          <ChevronRightIcon className="h-4 w-4 text-primary" />
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        {/* Quick links */}
+        <div className="mt-8 pt-8 border-t">
+          <h3 className="mb-3 text-sm font-semibold text-foreground">
+            Quick Links
+          </h3>
+          <ul className="space-y-1">
+            <li>
+              <a
+                href="https://github.com/sachinnimbal/crudx-framework"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub Repository
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/sachinnimbal/crudx-framework/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                Report Issues
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://github.com/sachinnimbal/crudx-framework/discussions"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                Discussions
+              </a>
+            </li>
+          </ul>
         </div>
-      ))}
-    </div>
+      </div>
+    </aside>
   );
 }

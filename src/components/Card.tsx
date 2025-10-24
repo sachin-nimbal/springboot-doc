@@ -1,20 +1,55 @@
+import React from 'react';
 import { cn } from '../utils/cn';
 
-interface CardProps {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
 }
 
-export default function Card({ children, className, hover = false }: CardProps) {
+interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+export function Card({ className, children, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-card p-6',
-        hover && 'transition-all hover:shadow-lg hover:border-primary/50',
+        "rounded-lg border bg-card text-card-foreground shadow-sm",
         className
       )}
+      {...props}
     >
+      {children}
+    </div>
+  );
+}
+
+export function CardHeader({ className, children, ...props }: CardHeaderProps) {
+  return (
+    <div className={cn("flex flex-col space-y-1.5 p-6", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+export function CardContent({ className, children, ...props }: CardContentProps) {
+  return (
+    <div className={cn("p-6 pt-0", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+export function CardFooter({ className, children, ...props }: CardFooterProps) {
+  return (
+    <div className={cn("flex items-center p-6 pt-0", className)} {...props}>
       {children}
     </div>
   );

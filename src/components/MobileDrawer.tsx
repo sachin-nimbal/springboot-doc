@@ -1,103 +1,80 @@
-import { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { X, FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
-import { cn } from '../utils/cn';
-
-const navigation = [
-  {
-    title: 'Getting Started',
-    items: [
-      { title: 'Overview', path: '/overview', icon: FileText },
-      { title: 'Getting Started', path: '/getting-started', icon: Rocket },
-    ],
-  },
-  {
-    title: 'Core Concepts',
-    items: [
-      { title: 'Annotations', path: '/annotations', icon: Tag },
-      { title: 'Entities', path: '/entities', icon: Database },
-      { title: 'REST Endpoints', path: '/rest-endpoints', icon: Zap },
-    ],
-  },
-];
+import React from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { Sidebar } from './Sidebar';
 
 interface MobileDrawerProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-export default function MobileDrawer({ onClose }: MobileDrawerProps) {
-  // Prevent body scroll when drawer is open
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
-
+export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-      />
+    <Transition show={isOpen} as={React.Fragment}>
+      <Dialog as="div" className="relative z-50 lg:hidden" onClose={onClose}>
+        <Transition.Child
+          as={React.Fragment}
+          enter="transition-opacity ease-linear duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity ease-linear duration-300"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" />
+        </Transition.Child>
 
-      {/* Drawer */}
-      <motion.aside
-        initial={{ x: '-100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '-100%' }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed left-0 top-0 bottom-0 w-72 bg-background border-r border-border z-50 lg:hidden overflow-y-auto scrollbar-thin"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold">Navigation</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-accent rounded-lg focus-ring transition-colors"
-            aria-label="Close menu"
+        <div className="fixed inset-0 flex">
+          <Transition.Child
+            as={React.Fragment}
+            enter="transition ease-in-out duration-300 transform"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="transition ease-in-out duration-300 transform"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
           >
-            <X className="w-5 h-5" />
-          </button>
+            <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
+              <Transition.Child
+                as={React.Fragment}
+                enter="ease-in-out duration-300"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-in-out duration-300"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
+                  <button
+                    type="button"
+                    className="-m-2.5 p-2.5"
+                    onClick={onClose}
+                  >
+                    <span className="sr-only">Close sidebar</span>
+                    <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                  </button>
+                </div>
+              </Transition.Child>
+              
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-background px-6 pb-4 border-r">
+                <div className="flex h-16 shrink-0 items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
+                      C
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-lg leading-none">CrudX</span>
+                      <span className="text-xs text-muted-foreground leading-none">Framework</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <Sidebar className="w-full" />
+              </div>
+            </Dialog.Panel>
+          </Transition.Child>
         </div>
-
-        {/* Navigation */}
-        <div className="py-6 px-4 space-y-6">
-          {navigation.map((section) => (
-            <div key={section.title}>
-              <h3 className="label-text mb-2 px-3">{section.title}</h3>
-              <nav className="space-y-1">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      onClick={onClose}
-                      className={({ isActive }) =>
-                        cn(
-                          'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors focus-ring',
-                          isActive
-                            ? 'bg-accent text-accent-foreground font-medium border-l-2 border-primary'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                        )
-                      }
-                    >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  );
-                })}
-              </nav>
-            </div>
-          ))}
-        </div>
-      </motion.aside>
-    </>
+      </Dialog>
+    </Transition>
   );
 }

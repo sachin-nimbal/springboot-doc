@@ -1,45 +1,59 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { cn } from '../utils/cn';
 
+interface PaginationItem {
+  title: string;
+  href: string;
+  description?: string;
+}
+
 interface PaginationProps {
-  prev?: { title: string; path: string };
-  next?: { title: string; path: string };
+  previous?: PaginationItem;
+  next?: PaginationItem;
   className?: string;
 }
 
-export default function Pagination({ prev, next, className }: PaginationProps) {
+export function Pagination({ previous, next, className }: PaginationProps) {
+  if (!previous && !next) return null;
+
   return (
-    <nav
-      aria-label="Page navigation"
-      className={cn('flex items-center justify-between gap-4 pt-8 border-t border-border', className)}
-    >
-      {prev ? (
+    <nav className={cn("flex items-center justify-between border-t pt-6", className)}>
+      {previous ? (
         <Link
-          to={prev.path}
-          className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:bg-accent hover:border-primary/50 transition-all focus-ring group max-w-xs"
+          to={previous.href}
+          className="group flex items-center gap-3 rounded-lg border p-4 hover:bg-muted transition-colors max-w-xs"
         >
-          <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <ChevronLeftIcon className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
           <div className="text-left">
             <div className="text-xs text-muted-foreground mb-1">Previous</div>
-            <div className="text-sm font-medium">{prev.title}</div>
+            <div className="font-medium text-sm">{previous.title}</div>
+            {previous.description && (
+              <div className="text-xs text-muted-foreground mt-1">{previous.description}</div>
+            )}
           </div>
         </Link>
       ) : (
         <div />
       )}
 
-      {next && (
+      {next ? (
         <Link
-          to={next.path}
-          className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:bg-accent hover:border-primary/50 transition-all focus-ring group max-w-xs ml-auto"
+          to={next.href}
+          className="group flex items-center gap-3 rounded-lg border p-4 hover:bg-muted transition-colors max-w-xs text-right"
         >
           <div className="text-right">
             <div className="text-xs text-muted-foreground mb-1">Next</div>
-            <div className="text-sm font-medium">{next.title}</div>
+            <div className="font-medium text-sm">{next.title}</div>
+            {next.description && (
+              <div className="text-xs text-muted-foreground mt-1">{next.description}</div>
+            )}
           </div>
-          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <ChevronRightIcon className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
         </Link>
+      ) : (
+        <div />
       )}
     </nav>
   );

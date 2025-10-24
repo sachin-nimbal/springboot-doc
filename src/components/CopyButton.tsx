@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { ClipboardIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { copyToClipboard } from '../utils/clipboard';
 import { cn } from '../utils/cn';
 
 interface CopyButtonProps {
   text: string;
   className?: string;
+  size?: 'sm' | 'md';
 }
 
-export default function CopyButton({ text, className }: CopyButtonProps) {
+export function CopyButton({ text, className, size = 'md' }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -19,28 +20,25 @@ export default function CopyButton({ text, className }: CopyButtonProps) {
     }
   };
 
+  const sizeStyles = {
+    sm: "h-4 w-4",
+    md: "h-5 w-5",
+  };
+
   return (
     <button
       onClick={handleCopy}
       className={cn(
-        'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium',
-        'rounded-md border border-border bg-background',
-        'hover:bg-accent hover:text-accent-foreground',
-        'focus-ring transition-colors',
+        "inline-flex items-center justify-center rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors",
+        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         className
       )}
-      aria-label={copied ? 'Copied' : 'Copy to clipboard'}
+      title={copied ? "Copied!" : "Copy to clipboard"}
     >
       {copied ? (
-        <>
-          <Check className="w-3.5 h-3.5" />
-          Copied!
-        </>
+        <CheckIcon className={cn(sizeStyles[size], "text-success")} />
       ) : (
-        <>
-          <Copy className="w-3.5 h-3.5" />
-          Copy
-        </>
+        <ClipboardIcon className={sizeStyles[size]} />
       )}
     </button>
   );

@@ -1,44 +1,39 @@
-/**
- * Utility for syntax highlighting with lazy loading
- */
+import { themes } from 'prism-react-renderer';
 
-export interface HighlightResult {
-  tokens: Array<{
-    types: string[];
-    content: string;
-  }>;
-  language: string;
+export const lightTheme = themes.github;
+export const darkTheme = themes.vsDark;
+
+export const languageMap: Record<string, string> = {
+  js: 'javascript',
+  ts: 'typescript',
+  jsx: 'javascript',
+  tsx: 'typescript',
+  py: 'python',
+  rb: 'ruby',
+  sh: 'bash',
+  yml: 'yaml',
+  json: 'json',
+  xml: 'xml',
+  html: 'markup',
+  css: 'css',
+  scss: 'scss',
+  sass: 'sass',
+  java: 'java',
+  kt: 'kotlin',
+  swift: 'swift',
+  go: 'go',
+  rs: 'rust',
+  php: 'php',
+  sql: 'sql',
+  md: 'markdown',
+  mdx: 'markdown',
+};
+
+export function getLanguage(lang: string): string {
+  return languageMap[lang.toLowerCase()] || lang;
 }
 
-/**
- * Lazy load the syntax highlighter to reduce initial bundle size
- */
-export async function loadHighlighter() {
-  const { default: Highlight, Prism } = await import('prism-react-renderer');
-  return { Highlight, Prism };
-}
-
-/**
- * Get language label for display
- */
-export function getLanguageLabel(language: string): string {
-  const labels: Record<string, string> = {
-    tsx: 'TypeScript',
-    ts: 'TypeScript',
-    jsx: 'JavaScript',
-    js: 'JavaScript',
-    json: 'JSON',
-    bash: 'Shell',
-    sh: 'Shell',
-    css: 'CSS',
-    html: 'HTML',
-    python: 'Python',
-    py: 'Python',
-    java: 'Java',
-    go: 'Go',
-    rust: 'Rust',
-    sql: 'SQL',
-  };
-  
-  return labels[language] || language.toUpperCase();
+export function formatLanguageLabel(lang: string): string {
+  const formatted = getLanguage(lang);
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }

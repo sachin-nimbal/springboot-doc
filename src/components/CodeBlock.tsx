@@ -1,54 +1,82 @@
-import { Suspense, lazy } from 'react';
+import React from 'react';
+import { Highlight } from 'prism-react-renderer';
+import { useTheme } from '../hooks/useTheme';
+import { CopyButton } from './CopyButton';
+import { lightTheme, darkTheme, getLanguage, formatLanguageLabel } from '../utils/highlight';
 import { cn } from '../utils/cn';
-import { getLanguageLabel } from '../utils/highlight';
-import CopyButton from './CopyButton';
-
-// Lazy load the syntax highlighter to reduce initial bundle size
-const SyntaxHighlighter = lazy(() => import('./SyntaxHighlighter'));
 
 interface CodeBlockProps {
   code: string;
-  language: string;
+  language?: string;
+  title?: string;
   showLineNumbers?: boolean;
   className?: string;
-  title?: string;
 }
 
-export default function CodeBlock({
-  code,
-  language,
-  showLineNumbers = true,
-  className,
-  title,
+export function CodeBlock({ 
+  code, 
+  language = 'text', 
+  title, 
+  showLineNumbers = false,
+  className 
 }: CodeBlockProps) {
+  const { resolvedTheme } = useTheme();
+  const theme = resolvedTheme === 'dark' ? darkTheme : lightTheme;
+  const lang = getLanguage(language);
+
   return (
-    <div className={cn('relative rounded-lg overflow-hidden border border-border my-4', className)}>
+    <div className={cn("relative group", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
-        <div className="flex items-center gap-2">
-          {title && <span className="text-xs font-medium">{title}</span>}
-          <span className="text-xs text-muted-foreground label-text">
-            {getLanguageLabel(language)}
-          </span>
+      {(title || language) && (
+        <div className="flex items-center justify-between px-4 py-2 bg-muted border border-b-0 rounded-t-lg">
+          <div className="flex items-center gap-2">
+            {title && (
+              <span className="text-sm font-medium text-foreground">{title}</span>
+            )}
+            {language && (
+              <span className="text-xs px-2 py-1 bg-background rounded text-muted-foreground font-mono">
+                {formatLanguageLabel(language)}
+              </span>
+            )}
+          </div>
+          <CopyButton text={code} size="sm" />
         </div>
-        <CopyButton text={code} />
-      </div>
+      )}
 
       {/* Code */}
       <div className="relative">
-        <Suspense
-          fallback={
-            <pre className="p-4 overflow-x-auto bg-muted/30 scrollbar-thin">
-              <code className="text-sm font-mono">{code}</code>
+        {!title && !language && (
+          <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+            <CopyButton text={code} size="sm" />
+          </div>
+        )}
+        
+        <Highlight theme={theme} code={code.trim()} language={lang}>
+          {({ className: highlightClassName, style, tokens, getLineProps, getTokenProps }) => (
+            <pre
+              className={cn(
+                highlightClassName,
+                "overflow-x-auto p-4 text-sm",
+                title || language ? "rounded-t-none rounded-b-lg" : "rounded-lg",
+                "border bg-background"
+              )}
+              style={style}
+            >
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })}>
+                  {showLineNumbers && (
+                    <span className="inline-block w-8 text-right mr-4 text-muted-foreground select-none">
+                      {i + 1}
+                    </span>
+                  )}
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              ))}
             </pre>
-          }
-        >
-          <SyntaxHighlighter
-            code={code}
-            language={language}
-            showLineNumbers={showLineNumbers}
-          />
-        </Suspense>
+          )}
+        </Highlight>
       </div>
     </div>
   );

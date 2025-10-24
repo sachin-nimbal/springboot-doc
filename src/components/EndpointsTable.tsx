@@ -1,159 +1,147 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Badge from './Badge';
-import CodeBlock from './CodeBlock';
-import { copyToClipboard } from '../utils/clipboard';
+import React from 'react';
+import { MethodBadge } from './Badge';
+import { CopyButton } from './CopyButton';
+import { Card, CardContent, CardHeader } from './Card';
 import { cn } from '../utils/cn';
+import endpointsData from '../data/endpoints.json';
+
+interface Parameter {
+  name: string;
+  type: string;
+  description: string;
+}
 
 interface Endpoint {
-  method: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   path: string;
   description: string;
-  example?: {
-    curl: string;
-    response: string;
+  parameters?: Parameter[];
+  requestBody?: {
+    description: string;
+    required: boolean;
   };
+  responses: Record<string, string>;
 }
 
 interface EndpointsTableProps {
-  endpoints: Endpoint[];
   className?: string;
 }
 
-const methodColors: Record<string, 'success' | 'info' | 'warning' | 'error'> = {
-  GET: 'success',
-  POST: 'info',
-  PUT: 'warning',
-  DELETE: 'error',
-  PATCH: 'info',
-};
+export function EndpointsTable({ className }: EndpointsTableProps) {
+  const endpoints = endpointsData.endpoints as Endpoint[];
 
-export default function EndpointsTable({ endpoints, className }: EndpointsTableProps) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-
-  const handleCopyCurl = async (curl: string, index: number) => {
-    const success = await copyToClipboard(curl);
-    if (success) {
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), 2000);
+  const generateCurlCommand = (endpoint: Endpoint) => {
+    let curl = `curl -X ${endpoint.method} "https://api.example.com${endpoint.path}"`;
+    
+    if (endpoint.method === 'POST' || endpoint.method === 'PUT') {
+      curl += ' \\\n  -H "Content-Type: application/json" \\\n  -d \'{"key": "value"}\'';
     }
+    
+    return curl;
   };
 
   return (
-    <div className={cn('border border-border rounded-lg overflow-hidden', className)}>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border">
-            <tr>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-12"></th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
-                Method
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Endpoint
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Description
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {endpoints.map((endpoint, index) => (
-              <>
-                <tr key={index} className="hover:bg-accent/30 transition-colors">
-                  <td className="px-4 py-3">
-                    {endpoint.example && (
-                      <button
-                        onClick={() =>
-                          setExpandedIndex(expandedIndex === index ? null : index)
-                        }
-                        className="p-1 hover:bg-accent rounded focus-ring"
-                        aria-label={expandedIndex === index ? 'Collapse' : 'Expand'}
-                      >
-                        {expandedIndex === index ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={methodColors[endpoint.method] || 'default'}>
-                      {endpoint.method}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <code className="text-sm font-mono">{endpoint.path}</code>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {endpoint.description}
-                  </td>
-                  <td className="px-4 py-3">
-                    {endpoint.example && (
-                      <button
-                        onClick={() => handleCopyCurl(endpoint.example!.curl, index)}
-                        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors focus-ring rounded px-2 py-1"
-                      >
-                        {copiedIndex === index ? (
-                          <>
-                            <Check className="w-3 h-3" />
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3" />
-                            cURL
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-                <AnimatePresence>
-                  {expandedIndex === index && endpoint.example && (
-                    <tr>
-                      <td colSpan={5} className="p-0">
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="p-4 bg-muted/20 space-y-4">
-                            <div>
-                              <h4 className="text-sm font-semibold mb-2">Request</h4>
-                              <CodeBlock
-                                code={endpoint.example.curl}
-                                language="bash"
-                                showLineNumbers={false}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-semibold mb-2">Response</h4>
-                              <CodeBlock
-                                code={endpoint.example.response}
-                                language="json"
-                                showLineNumbers={false}
-                              />
-                            </div>
-                          </div>
-                        </motion.div>
-                      </td>
-                    </tr>
+    <div className={cn("space-y-6", className)}>
+      {endpoints.map((endpoint, index) => (
+        <Card key={index} className="overflow-hidden">
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <MethodBadge method={endpoint.method} />
+                <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                  {endpoint.path}
+                </code>
+              </div>
+              <CopyButton 
+                text={generateCurlCommand(endpoint)} 
+                className="shrink-0"
+              />
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              {endpoint.description}
+            </p>
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {/* Parameters */}
+            {endpoint.parameters && endpoint.parameters.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold mb-2">Parameters</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 font-medium">Name</th>
+                        <th className="text-left py-2 font-medium">Type</th>
+                        <th className="text-left py-2 font-medium">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {endpoint.parameters.map((param, paramIndex) => (
+                        <tr key={paramIndex} className="border-b last:border-b-0">
+                          <td className="py-2 font-mono text-xs">{param.name}</td>
+                          <td className="py-2">
+                            <span className="inline-flex items-center rounded bg-muted px-2 py-1 text-xs font-medium">
+                              {param.type}
+                            </span>
+                          </td>
+                          <td className="py-2 text-muted-foreground">{param.description}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Request Body */}
+            {endpoint.requestBody && (
+              <div>
+                <h4 className="text-sm font-semibold mb-2">Request Body</h4>
+                <p className="text-sm text-muted-foreground">
+                  {endpoint.requestBody.description}
+                  {endpoint.requestBody.required && (
+                    <span className="text-destructive ml-1">*</span>
                   )}
-                </AnimatePresence>
-              </>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </p>
+              </div>
+            )}
+
+            {/* Responses */}
+            <div>
+              <h4 className="text-sm font-semibold mb-2">Responses</h4>
+              <div className="space-y-2">
+                {Object.entries(endpoint.responses).map(([code, description]) => (
+                  <div key={code} className="flex items-center gap-3">
+                    <span className={cn(
+                      "inline-flex items-center rounded px-2 py-1 text-xs font-medium",
+                      code.startsWith('2') 
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                        : code.startsWith('4')
+                        ? "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
+                    )}>
+                      {code}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{description}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* cURL Example */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-sm font-semibold">Example Request</h4>
+                <CopyButton text={generateCurlCommand(endpoint)} size="sm" />
+              </div>
+              <pre className="bg-muted p-3 rounded text-xs font-mono overflow-x-auto">
+                {generateCurlCommand(endpoint)}
+              </pre>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

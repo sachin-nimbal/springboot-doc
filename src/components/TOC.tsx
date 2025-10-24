@@ -1,3 +1,4 @@
+import React from 'react';
 import { useScrollSpy } from '../hooks/useScrollSpy';
 import { cn } from '../utils/cn';
 
@@ -12,51 +13,41 @@ interface TOCProps {
   className?: string;
 }
 
-export default function TOC({ items, className }: TOCProps) {
-  const activeId = useScrollSpy(
-    items.map((item) => item.id),
-    150
-  );
+export function TOC({ items, className }: TOCProps) {
+  const activeId = useScrollSpy(items.map(item => `#${item.id}`));
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
+  const handleClick = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
+  if (items.length === 0) return null;
+
   return (
-    <nav
-      aria-label="Table of contents"
-      className={cn('space-y-2', className)}
-    >
-      <h4 className="text-sm font-semibold mb-4">On this page</h4>
-      <ul className="space-y-2 text-sm">
+    <div className={cn("space-y-2", className)}>
+      <h4 className="text-sm font-semibold text-foreground mb-4">On this page</h4>
+      <nav className="space-y-1">
         {items.map((item) => (
-          <li key={item.id} style={{ paddingLeft: `${(item.level - 2) * 12}px` }}>
-            <a
-              href={`#${item.id}`}
-              onClick={(e) => handleClick(e, item.id)}
-              className={cn(
-                'block py-1 transition-colors border-l-2 pl-3 focus-ring rounded',
-                activeId === item.id
-                  ? 'border-primary text-primary font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-              )}
-            >
-              {item.title}
-            </a>
-          </li>
+          <button
+            key={item.id}
+            onClick={() => handleClick(item.id)}
+            className={cn(
+              "block w-full text-left text-sm transition-colors hover:text-foreground",
+              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm",
+              item.level === 2 && "pl-0",
+              item.level === 3 && "pl-4",
+              item.level === 4 && "pl-8",
+              activeId === item.id
+                ? "text-primary font-medium"
+                : "text-muted-foreground"
+            )}
+          >
+            {item.title}
+          </button>
         ))}
-      </ul>
-    </nav>
+      </nav>
+    </div>
   );
 }
