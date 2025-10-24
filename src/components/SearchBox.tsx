@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';
@@ -94,7 +94,7 @@ export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
         <div className="bg-background border border-border rounded-lg shadow-2xl overflow-hidden">
           {/* Search Input */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-            <Search className="w-5 h-5 text-muted-foreground" />
+            <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground" />
             <input
               ref={inputRef}
               type="text"
@@ -110,7 +110,7 @@ export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
               className="p-1 hover:bg-accent rounded focus-ring"
               aria-label="Close search"
             >
-              <X className="w-4 h-4" />
+              <XMarkIcon className="w-4 h-4" />
             </button>
           </div>
 

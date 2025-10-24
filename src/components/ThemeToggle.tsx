@@ -1,4 +1,4 @@
-import { Moon, Sun } from 'lucide-react';
+import { MoonIcon, SunIcon } from '@heroicons/react/24/outline';
 import { useTheme } from '../hooks/useTheme';
 import { motion } from 'framer-motion';
 
@@ -19,9 +19,9 @@ export default function ThemeToggle() {
         className="absolute inset-0 flex items-center justify-center"
       >
         {theme === 'light' ? (
-          <Sun className="w-5 h-5" />
+          <SunIcon className="w-5 h-5" />
         ) : (
-          <Moon className="w-5 h-5" />
+          <MoonIcon className="w-5 h-5" />
         )}
       </motion.div>
     </button>

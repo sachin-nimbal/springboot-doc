@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Terminal, PackageCheck, Play } from 'lucide-react';
+import { CommandLineIcon, ArchiveBoxArrowDownIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
 import CodeBlock from '../components/CodeBlock';
 import Alert from '../components/Alert';
 import Badge from '../components/Badge';
@@ -83,7 +83,7 @@ export default function GettingStarted() {
           <div className="not-prose grid sm:grid-cols-3 gap-4 my-6">
             <Card>
               <div className="flex items-center gap-3 mb-2">
-                <Terminal className="w-5 h-5 text-primary" />
+                <CommandLineIcon className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold">Node.js</h3>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -93,7 +93,7 @@ export default function GettingStarted() {
 
             <Card>
               <div className="flex items-center gap-3 mb-2">
-                <PackageCheck className="w-5 h-5 text-primary" />
+                <ArchiveBoxArrowDownIcon className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold">Package Manager</h3>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -103,7 +103,7 @@ export default function GettingStarted() {
 
             <Card>
               <div className="flex items-center gap-3 mb-2">
-                <Play className="w-5 h-5 text-primary" />
+                <PlayCircleIcon className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold">TypeScript</h3>
               </div>
               <p className="text-sm text-muted-foreground">

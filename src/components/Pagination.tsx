@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { cn } from '../utils/cn';
 
 interface PaginationProps {
@@ -19,7 +19,7 @@ export default function Pagination({ prev, next, className }: PaginationProps) {
           to={prev.path}
           className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border hover:bg-accent hover:border-primary/50 transition-all focus-ring group max-w-xs"
         >
-          <ChevronLeft className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <ChevronLeftIcon className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
           <div className="text-left">
             <div className="text-xs text-muted-foreground mb-1">Previous</div>
             <div className="text-sm font-medium">{prev.title}</div>
@@ -38,7 +38,7 @@ export default function Pagination({ prev, next, className }: PaginationProps) {
             <div className="text-xs text-muted-foreground mb-1">Next</div>
             <div className="text-sm font-medium">{next.title}</div>
           </div>
-          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          <ChevronRightIcon className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
         </Link>
       )}
     </nav>

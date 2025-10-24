@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# Premium Docs (React + Tailwind)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A production-ready, pixel-perfect React + Tailwind CSS documentation site replicating the CrudX API docs with dark mode, responsive layout, code highlighting, sticky TOC, and accessible components.
 
-Currently, two official plugins are available:
+## Tech Stack
+- React 18 + Vite
+- TypeScript
+- Tailwind CSS 3
+- Prism React Renderer (lazy loaded)
+- Heroicons
+- React Router
+- Framer Motion
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Getting Started
+1. Install dependencies
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. Run the dev server
+```bash
+npm run dev
 ```
+
+3. Build for production
+```bash
+npm run build
+```
+
+4. Preview the production build
+```bash
+npm run preview
+```
+
+## Features
+- Light/Dark mode with localStorage persistence
+- Sticky left sidebar and “On this page” TOC
+- Mobile drawer navigation and keyboard-accessible search (⌘/Ctrl+K)
+- Syntax-highlighted code blocks with copy button
+- REST endpoints table with method badges and cURL copy
+- Accessible focus rings, ARIA labels, and keyboard navigation
+
+## Project Structure
+See `src/components`, `src/pages`, `src/utils`, and `src/styles` for implementation details. Tailwind is configured via `tailwind.config.ts` and `postcss.config.js`.
+
+## Theming
+Themes are controlled via a class on the `html` element. See `src/utils/theme.ts` and `src/hooks/useTheme.ts`.
+
+## Licensing
+This project is provided as an example documentation UI. Replace branding and content as needed.

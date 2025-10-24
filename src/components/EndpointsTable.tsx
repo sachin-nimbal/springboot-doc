@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
+import { ChevronDownIcon, ChevronRightIcon, ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import Badge from './Badge';
 import CodeBlock from './CodeBlock';
-import { copyToClipboard } from '../utils/clipboard';
+import { copyToClipboard, showToast } from '../utils/clipboard';
 import { cn } from '../utils/cn';
 
 interface Endpoint {
@@ -37,6 +37,7 @@ export default function EndpointsTable({ endpoints, className }: EndpointsTableP
     const success = await copyToClipboard(curl);
     if (success) {
       setCopiedIndex(index);
+      showToast('cURL copied');
       setTimeout(() => setCopiedIndex(null), 2000);
     }
   };
@@ -76,9 +77,9 @@ export default function EndpointsTable({ endpoints, className }: EndpointsTableP
                         aria-label={expandedIndex === index ? 'Collapse' : 'Expand'}
                       >
                         {expandedIndex === index ? (
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDownIcon className="w-4 h-4" />
                         ) : (
-                          <ChevronRight className="w-4 h-4" />
+                          <ChevronRightIcon className="w-4 h-4" />
                         )}
                       </button>
                     )}
@@ -102,12 +103,12 @@ export default function EndpointsTable({ endpoints, className }: EndpointsTableP
                       >
                         {copiedIndex === index ? (
                           <>
-                            <Check className="w-3 h-3" />
+                            <CheckIcon className="w-3 h-3" />
                             Copied
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3 h-3" />
+                            <ClipboardDocumentIcon className="w-3 h-3" />
                             cURL
                           </>
                         )}

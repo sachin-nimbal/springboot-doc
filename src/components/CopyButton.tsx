@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
-import { copyToClipboard } from '../utils/clipboard';
+import { ClipboardDocumentIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { copyToClipboard, showToast } from '../utils/clipboard';
 import { cn } from '../utils/cn';
 
 interface CopyButtonProps {
@@ -15,6 +15,7 @@ export default function CopyButton({ text, className }: CopyButtonProps) {
     const success = await copyToClipboard(text);
     if (success) {
       setCopied(true);
+      showToast('Copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     }
   };
@@ -33,12 +34,12 @@ export default function CopyButton({ text, className }: CopyButtonProps) {
     >
       {copied ? (
         <>
-          <Check className="w-3.5 h-3.5" />
+          <CheckIcon className="w-3.5 h-3.5" />
           Copied!
         </>
       ) : (
         <>
-          <Copy className="w-3.5 h-3.5" />
+          <ClipboardDocumentIcon className="w-3.5 h-3.5" />
           Copy
         </>
       )}

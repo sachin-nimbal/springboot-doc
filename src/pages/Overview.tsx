@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Shield, Code, Sparkles } from 'lucide-react';
+import { ArrowRightIcon, BoltIcon, ShieldCheckIcon, CodeBracketSquareIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
@@ -44,7 +44,7 @@ export default function Overview() {
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 focus-ring transition-opacity"
             >
               Get Started
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRightIcon className="w-4 h-4" />
             </Link>
             <a
               href="https://github.com"
@@ -82,7 +82,7 @@ export default function Overview() {
             <Card hover>
               <div className="flex items-start gap-4">
                 <div className="p-2 rounded-lg bg-primary/10">
-                  <Zap className="w-6 h-6 text-primary" />
+                  <BoltIcon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
@@ -97,7 +97,7 @@ export default function Overview() {
             <Card hover>
               <div className="flex items-start gap-4">
                 <div className="p-2 rounded-lg bg-primary/10">
-                  <Shield className="w-6 h-6 text-primary" />
+                  <ShieldCheckIcon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Type Safe</h3>
@@ -112,7 +112,7 @@ export default function Overview() {
             <Card hover>
               <div className="flex items-start gap-4">
                 <div className="p-2 rounded-lg bg-primary/10">
-                  <Code className="w-6 h-6 text-primary" />
+                  <CodeBracketSquareIcon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Developer Friendly</h3>
@@ -127,7 +127,7 @@ export default function Overview() {
             <Card hover>
               <div className="flex items-start gap-4">
                 <div className="p-2 rounded-lg bg-primary/10">
-                  <Sparkles className="w-6 h-6 text-primary" />
+                  <SparklesIcon className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Modern Stack</h3>

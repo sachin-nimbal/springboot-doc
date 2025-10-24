@@ -1,4 +1,4 @@
-import { Github, Twitter, Linkedin } from 'lucide-react';
+import { CommandLineIcon, ArrowTopRightOnSquareIcon, BriefcaseIcon } from '@heroicons/react/24/outline';
 
 export default function Footer() {
   return (
@@ -18,8 +18,9 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors focus-ring rounded"
               aria-label="GitHub"
+              title="GitHub"
             >
-              <Github className="w-5 h-5" />
+              <CommandLineIcon className="w-5 h-5" />
             </a>
             <a
               href="https://twitter.com"
@@ -27,8 +28,9 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors focus-ring rounded"
               aria-label="Twitter"
+              title="Twitter/X"
             >
-              <Twitter className="w-5 h-5" />
+              <ArrowTopRightOnSquareIcon className="w-5 h-5" />
             </a>
             <a
               href="https://linkedin.com"
@@ -36,8 +38,9 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors focus-ring rounded"
               aria-label="LinkedIn"
+              title="LinkedIn"
             >
-              <Linkedin className="w-5 h-5" />
+              <BriefcaseIcon className="w-5 h-5" />
             </a>
           </div>
         </div>

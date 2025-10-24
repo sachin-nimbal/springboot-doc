@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../utils/cn';
 
@@ -45,7 +45,7 @@ export default function Accordion({ items, defaultOpen = [], className }: Accord
                 animate={{ rotate: isOpen ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDownIcon className="w-4 h-4" />
               </motion.div>
             </button>
 

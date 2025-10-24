@@ -7,8 +7,11 @@ import MobileDrawer from './components/MobileDrawer';
 import Footer from './components/Footer';
 import Overview from './pages/Overview';
 import GettingStarted from './pages/GettingStarted';
+import QuickSetup from './pages/QuickSetup';
 import Annotations from './pages/Annotations';
+import CoreAnnotations from './pages/CoreAnnotations';
 import Entities from './pages/Entities';
+import BaseEntities from './pages/BaseEntities';
 import RestEndpoints from './pages/RestEndpoints';
 import { useTheme } from './hooks/useTheme';
 
@@ -41,14 +44,7 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Apply theme class to html element
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+  // Theme class is applied in the theme hook now
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -83,9 +79,12 @@ function App() {
               <Routes>
                 <Route path="/" element={<Navigate to="/overview" replace />} />
                 <Route path="/overview" element={<Overview />} />
+                <Route path="/quick-setup" element={<QuickSetup />} />
                 <Route path="/getting-started" element={<GettingStarted />} />
+                <Route path="/core-annotations" element={<CoreAnnotations />} />
                 <Route path="/annotations" element={<Annotations />} />
                 <Route path="/entities" element={<Entities />} />
+                <Route path="/base-entities" element={<BaseEntities />} />
                 <Route path="/rest-endpoints" element={<RestEndpoints />} />
               </Routes>
             </motion.div>

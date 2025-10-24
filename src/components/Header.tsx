@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Menu, Search, Command } from 'lucide-react';
+import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import SearchBox from './SearchBox';
@@ -30,7 +30,7 @@ export default function Header({ onMenuClick, onSearchClick, isSearchOpen, onSea
                 className="lg:hidden p-2 hover:bg-accent rounded-lg focus-ring transition-colors"
                 aria-label="Open menu"
               >
-                <Menu className="w-5 h-5" />
+                <Bars3Icon className="w-5 h-5" />
               </button>
 
               <Link to="/" className="flex items-center gap-3 focus-ring rounded-lg">
@@ -73,10 +73,10 @@ export default function Header({ onMenuClick, onSearchClick, isSearchOpen, onSea
                   'text-sm text-muted-foreground'
                 )}
               >
-                <Search className="w-4 h-4" />
+                <MagnifyingGlassIcon className="w-4 h-4" />
                 <span className="flex-1 text-left">Search documentation...</span>
                 <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-mono bg-muted rounded">
-                  <Command className="w-3 h-3" />K
+                  <span className="text-xs">⌘</span>K
                 </kbd>
               </button>
             </div>
@@ -88,7 +88,7 @@ export default function Header({ onMenuClick, onSearchClick, isSearchOpen, onSea
                 className="md:hidden p-2 hover:bg-accent rounded-lg focus-ring transition-colors"
                 aria-label="Search"
               >
-                <Search className="w-5 h-5" />
+                <MagnifyingGlassIcon className="w-5 h-5" />
               </button>
 
               <ThemeToggle />

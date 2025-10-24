@@ -1,23 +1,26 @@
 import { useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { X, FileText, Rocket, Tag, Database, Zap } from 'lucide-react';
+import { XMarkIcon, DocumentTextIcon, RocketLaunchIcon, TagIcon, CircleStackIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { cn } from '../utils/cn';
 
 const navigation = [
   {
     title: 'Getting Started',
     items: [
-      { title: 'Overview', path: '/overview', icon: FileText },
-      { title: 'Getting Started', path: '/getting-started', icon: Rocket },
+      { title: 'Overview', path: '/overview', icon: DocumentTextIcon },
+      { title: 'Quick Setup', path: '/quick-setup', icon: RocketLaunchIcon },
+      { title: 'Getting Started', path: '/getting-started', icon: RocketLaunchIcon },
     ],
   },
   {
     title: 'Core Concepts',
     items: [
-      { title: 'Annotations', path: '/annotations', icon: Tag },
-      { title: 'Entities', path: '/entities', icon: Database },
-      { title: 'REST Endpoints', path: '/rest-endpoints', icon: Zap },
+      { title: 'Core Annotations', path: '/core-annotations', icon: TagIcon },
+      { title: 'Base Entities', path: '/base-entities', icon: CircleStackIcon },
+      { title: 'Annotations', path: '/annotations', icon: TagIcon },
+      { title: 'Entities', path: '/entities', icon: CircleStackIcon },
+      { title: 'REST Endpoints', path: '/rest-endpoints', icon: BoltIcon },
     ],
   },
 ];
@@ -62,7 +65,7 @@ export default function MobileDrawer({ onClose }: MobileDrawerProps) {
             className="p-2 hover:bg-accent rounded-lg focus-ring transition-colors"
             aria-label="Close menu"
           >
-            <X className="w-5 h-5" />
+            <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
 
