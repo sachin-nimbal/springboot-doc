@@ -1,159 +1,209 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Badge from './Badge';
-import CodeBlock from './CodeBlock';
-import { copyToClipboard } from '../utils/clipboard';
-import { cn } from '../utils/cn';
+import React, { useState } from 'react';
+import { CopyButton } from './CopyButton';
+import { CodeBlock } from './CodeBlock';
+
+interface Parameter {
+  name: string;
+  type: string;
+  required: boolean;
+  description: string;
+}
+
+interface Response {
+  status: number;
+  description: string;
+  example: any;
+}
 
 interface Endpoint {
   method: string;
   path: string;
   description: string;
-  example?: {
-    curl: string;
-    response: string;
-  };
+  parameters: Parameter[];
+  responses: Response[];
 }
 
 interface EndpointsTableProps {
   endpoints: Endpoint[];
-  className?: string;
 }
 
-const methodColors: Record<string, 'success' | 'info' | 'warning' | 'error'> = {
-  GET: 'success',
-  POST: 'info',
-  PUT: 'warning',
-  DELETE: 'error',
-  PATCH: 'info',
+const getMethodColor = (method: string) => {
+  switch (method.toUpperCase()) {
+    case 'GET':
+      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+    case 'POST':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+    case 'PUT':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+    case 'DELETE':
+      return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+    case 'PATCH':
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+  }
 };
 
-export default function EndpointsTable({ endpoints, className }: EndpointsTableProps) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+export const EndpointsTable: React.FC<EndpointsTableProps> = ({ endpoints }) => {
+  const [expandedEndpoint, setExpandedEndpoint] = useState<number | null>(null);
+  const [copiedCurl, setCopiedCurl] = useState<number | null>(null);
 
-  const handleCopyCurl = async (curl: string, index: number) => {
-    const success = await copyToClipboard(curl);
-    if (success) {
-      setCopiedIndex(index);
-      setTimeout(() => setCopiedIndex(null), 2000);
+  const generateCurlCommand = (endpoint: Endpoint) => {
+    const baseUrl = 'https://api.crudx.com';
+    const method = endpoint.method.toUpperCase();
+    const url = `${baseUrl}${endpoint.path}`;
+    
+    let curl = `curl -X ${method} "${url}"`;
+    
+    if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+      curl += ` \\\n  -H "Content-Type: application/json" \\\n  -d '{}'`;
+    }
+    
+    return curl;
+  };
+
+  const handleCopyCurl = async (endpoint: Endpoint, index: number) => {
+    try {
+      const curlCommand = generateCurlCommand(endpoint);
+      await navigator.clipboard.writeText(curlCommand);
+      setCopiedCurl(index);
+      setTimeout(() => setCopiedCurl(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy cURL command:', err);
     }
   };
 
   return (
-    <div className={cn('border border-border rounded-lg overflow-hidden', className)}>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border">
-            <tr>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-12"></th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
-                Method
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Endpoint
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Description
-              </th>
-              <th className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted-foreground w-24">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {endpoints.map((endpoint, index) => (
-              <>
-                <tr key={index} className="hover:bg-accent/30 transition-colors">
-                  <td className="px-4 py-3">
-                    {endpoint.example && (
-                      <button
-                        onClick={() =>
-                          setExpandedIndex(expandedIndex === index ? null : index)
-                        }
-                        className="p-1 hover:bg-accent rounded focus-ring"
-                        aria-label={expandedIndex === index ? 'Collapse' : 'Expand'}
-                      >
-                        {expandedIndex === index ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
+    <div className="space-y-6">
+      {endpoints.map((endpoint, index) => (
+        <div
+          key={index}
+          className="border border-border rounded-lg bg-card overflow-hidden"
+        >
+          {/* Endpoint Header */}
+          <div className="p-4 border-b border-border">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  <span
+                    className={`px-2 py-1 text-xs font-semibold rounded ${getMethodColor(endpoint.method)}`}
+                  >
+                    {endpoint.method}
+                  </span>
+                  <code className="text-sm font-mono text-foreground bg-muted px-2 py-1 rounded">
+                    {endpoint.path}
+                  </code>
+                </div>
+                <p className="text-sm text-muted-foreground">{endpoint.description}</p>
+              </div>
+              <button
+                onClick={() => setExpandedEndpoint(expandedEndpoint === index ? null : index)}
+                className="ml-4 p-2 hover:bg-muted rounded transition-colors"
+              >
+                <span className="text-sm font-medium">
+                  {expandedEndpoint === index ? 'Hide Details' : 'Show Details'}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Expanded Content */}
+          {expandedEndpoint === index && (
+            <div className="p-4 space-y-6">
+              {/* Parameters */}
+              {endpoint.parameters.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground mb-3">Parameters</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 font-medium text-muted-foreground">Name</th>
+                          <th className="text-left py-2 font-medium text-muted-foreground">Type</th>
+                          <th className="text-left py-2 font-medium text-muted-foreground">Required</th>
+                          <th className="text-left py-2 font-medium text-muted-foreground">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {endpoint.parameters.map((param, paramIndex) => (
+                          <tr key={paramIndex} className="border-b border-border/50">
+                            <td className="py-2">
+                              <code className="text-foreground font-mono">{param.name}</code>
+                            </td>
+                            <td className="py-2 text-muted-foreground">{param.type}</td>
+                            <td className="py-2">
+                              <span
+                                className={`px-2 py-1 text-xs rounded ${
+                                  param.required
+                                    ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                }`}
+                              >
+                                {param.required ? 'Required' : 'Optional'}
+                              </span>
+                            </td>
+                            <td className="py-2 text-muted-foreground">{param.description}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Responses */}
+              {endpoint.responses.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold text-foreground mb-3">Responses</h4>
+                  <div className="space-y-4">
+                    {endpoint.responses.map((response, responseIndex) => (
+                      <div key={responseIndex} className="border border-border rounded-lg p-4">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span
+                            className={`px-2 py-1 text-xs font-semibold rounded ${
+                              response.status >= 200 && response.status < 300
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                : response.status >= 400
+                                ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                            }`}
+                          >
+                            {response.status}
+                          </span>
+                          <span className="text-sm text-muted-foreground">{response.description}</span>
+                        </div>
+                        {response.example && (
+                          <CodeBlock
+                            code={JSON.stringify(response.example, null, 2)}
+                            language="json"
+                            showLineNumbers={false}
+                          />
                         )}
-                      </button>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={methodColors[endpoint.method] || 'default'}>
-                      {endpoint.method}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <code className="text-sm font-mono">{endpoint.path}</code>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {endpoint.description}
-                  </td>
-                  <td className="px-4 py-3">
-                    {endpoint.example && (
-                      <button
-                        onClick={() => handleCopyCurl(endpoint.example!.curl, index)}
-                        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors focus-ring rounded px-2 py-1"
-                      >
-                        {copiedIndex === index ? (
-                          <>
-                            <Check className="w-3 h-3" />
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3" />
-                            cURL
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </td>
-                </tr>
-                <AnimatePresence>
-                  {expandedIndex === index && endpoint.example && (
-                    <tr>
-                      <td colSpan={5} className="p-0">
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="p-4 bg-muted/20 space-y-4">
-                            <div>
-                              <h4 className="text-sm font-semibold mb-2">Request</h4>
-                              <CodeBlock
-                                code={endpoint.example.curl}
-                                language="bash"
-                                showLineNumbers={false}
-                              />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-semibold mb-2">Response</h4>
-                              <CodeBlock
-                                code={endpoint.example.response}
-                                language="json"
-                                showLineNumbers={false}
-                              />
-                            </div>
-                          </div>
-                        </motion.div>
-                      </td>
-                    </tr>
-                  )}
-                </AnimatePresence>
-              </>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* cURL Example */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold text-foreground">cURL Example</h4>
+                  <CopyButton
+                    onCopy={() => handleCopyCurl(endpoint, index)}
+                    copied={copiedCurl === index}
+                  />
+                </div>
+                <CodeBlock
+                  code={generateCurlCommand(endpoint)}
+                  language="bash"
+                  showLineNumbers={false}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
-}
+};

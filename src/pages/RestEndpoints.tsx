@@ -1,175 +1,210 @@
-// import { Link } from 'react-router-dom';
-import CodeBlock from '../components/CodeBlock';
-import Alert from '../components/Alert';
-import Badge from '../components/Badge';
-import EndpointsTable from '../components/EndpointsTable';
-import Breadcrumbs from '../components/Breadcrumbs';
-import Pagination from '../components/Pagination';
-import TOC from '../components/TOC';
-import endpoints from '../data/endpoints.json';
+import React from 'react';
+import { EndpointsTable } from '../components/EndpointsTable';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/Card';
+import { Badge } from '../components/Badge';
+import { Alert, AlertDescription, AlertTitle } from '../components/Alert';
+import endpointsData from '../data/endpoints.json';
 
-const tocItems = [
-  { id: 'introduction', title: 'Introduction', level: 2 },
-  { id: 'http-methods', title: 'HTTP Methods', level: 2 },
-  { id: 'available-endpoints', title: 'Available Endpoints', level: 2 },
-  { id: 'authentication', title: 'Authentication', level: 2 },
-];
+export const RestEndpoints: React.FC = () => {
+  const endpointCategories = [
+    {
+      title: 'Authentication',
+      description: 'User authentication and authorization endpoints',
+      endpoints: endpointsData.filter(ep => ep.path.includes('/auth'))
+    },
+    {
+      title: 'User Management',
+      description: 'User CRUD operations and profile management',
+      endpoints: endpointsData.filter(ep => ep.path.includes('/users'))
+    },
+    {
+      title: 'Role Management',
+      description: 'Role-based access control endpoints',
+      endpoints: endpointsData.filter(ep => ep.path.includes('/roles'))
+    },
+    {
+      title: 'Permission Management',
+      description: 'Fine-grained permission management endpoints',
+      endpoints: endpointsData.filter(ep => ep.path.includes('/permissions'))
+    }
+  ];
 
-export default function RestEndpoints() {
+  const commonHeaders = [
+    { name: 'Authorization', description: 'Bearer token for authenticated requests', required: true },
+    { name: 'Content-Type', description: 'application/json for request body', required: false },
+    { name: 'Accept', description: 'application/json for response format', required: false }
+  ];
+
+  const statusCodes = [
+    { code: 200, description: 'OK - Request successful' },
+    { code: 201, description: 'Created - Resource created successfully' },
+    { code: 400, description: 'Bad Request - Invalid request data' },
+    { code: 401, description: 'Unauthorized - Authentication required' },
+    { code: 403, description: 'Forbidden - Insufficient permissions' },
+    { code: 404, description: 'Not Found - Resource not found' },
+    { code: 500, description: 'Internal Server Error - Server error occurred' }
+  ];
+
   return (
-    <div className="flex gap-8">
-      <div className="flex-1 min-w-0">
-        <Breadcrumbs
-          items={[
-            { label: 'Core Concepts', path: '/overview' },
-            { label: 'REST Endpoints' },
-          ]}
-          className="mb-6"
-        />
-
-        <div className="mb-8">
-          <Badge variant="info" className="mb-4">
-            API Reference
-          </Badge>
-          <h1 className="text-[clamp(2rem,4vw+1rem,3rem)] font-bold tracking-tight mb-4">
-            REST Endpoints
-          </h1>
-          <p className="text-[clamp(1rem,2vw+0.5rem,1.5rem)] text-muted-foreground">
-            Build powerful RESTful APIs with our intuitive endpoint system.
-          </p>
-        </div>
-
-        {/* Introduction */}
-        <section id="introduction" className="prose mb-12">
-          <h2>Introduction</h2>
-          <p>
-            Premium Docs makes it easy to build RESTful APIs with decorators and
-            TypeScript. Define your endpoints using method decorators and let the
-            framework handle routing, validation, and serialization.
-          </p>
-
-          <Alert variant="success" title="Auto Documentation">
-            All endpoints are automatically documented and can be exported to
-            OpenAPI/Swagger format.
-          </Alert>
-        </section>
-
-        {/* HTTP Methods */}
-        <section id="http-methods" className="prose mb-12">
-          <h2>HTTP Methods</h2>
-          <p>
-            Premium Docs supports all standard HTTP methods through dedicated
-            decorators:
-          </p>
-
-          <div className="not-prose">
-            <CodeBlock
-              code={`import { Controller, Get, Post, Put, Delete, Patch } from 'premium-docs';
-
-@Controller('/api/resources')
-export class ResourceController {
-  @Get()
-  findAll() {
-    return { data: [] };
-  }
-
-  @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return { data: { id } };
-  }
-
-  @Post()
-  create(@Body() data: CreateDto) {
-    return { success: true, data };
-  }
-
-  @Put('/:id')
-  update(@Param('id') id: string, @Body() data: UpdateDto) {
-    return { success: true, data };
-  }
-
-  @Patch('/:id')
-  partialUpdate(@Param('id') id: string, @Body() data: Partial<UpdateDto>) {
-    return { success: true, data };
-  }
-
-  @Delete('/:id')
-  remove(@Param('id') id: string) {
-    return { success: true };
-  }
-}`}
-              language="typescript"
-            />
-          </div>
-        </section>
-
-        {/* Available Endpoints */}
-        <section id="available-endpoints" className="prose mb-12">
-          <h2>Available Endpoints</h2>
-          <p>
-            Here's a comprehensive list of available API endpoints. Click on any
-            endpoint to see example requests and responses:
-          </p>
-
-          <div className="not-prose my-6">
-            <EndpointsTable endpoints={endpoints} />
-          </div>
-        </section>
-
-        {/* Authentication */}
-        <section id="authentication" className="prose mb-12">
-          <h2>Authentication</h2>
-          <p>
-            Secure your endpoints with built-in authentication support. Premium Docs
-            supports multiple authentication strategies:
-          </p>
-
-          <h3>Bearer Token Authentication</h3>
-          <div className="not-prose">
-            <CodeBlock
-              code={`import { Controller, Get, UseGuards } from 'premium-docs';
-import { AuthGuard } from '@premium-docs/auth';
-
-@Controller('/api/protected')
-@UseGuards(AuthGuard)
-export class ProtectedController {
-  @Get()
-  getProtectedData() {
-    return { secret: 'This is protected data' };
-  }
-}`}
-              language="typescript"
-            />
-          </div>
-
-          <h3>Making Authenticated Requests</h3>
-          <div className="not-prose">
-            <CodeBlock
-              code={`curl -X GET https://api.example.com/api/protected \\
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \\
-  -H "Content-Type: application/json"`}
-              language="bash"
-              showLineNumbers={false}
-            />
-          </div>
-
-          <Alert variant="warning" title="Security Best Practices">
-            Always use HTTPS in production and never commit API keys or tokens to
-            version control. Use environment variables for sensitive data.
-          </Alert>
-        </section>
-
-        <Pagination
-          prev={{ title: 'Entities', path: '/entities' }}
-        />
+    <div className="max-w-6xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-foreground mb-4">REST Endpoints</h1>
+        <p className="text-xl text-muted-foreground">
+          Complete API reference for all CrudX Framework endpoints. All endpoints are automatically 
+          generated from your entity classes and can be customized using annotations.
+        </p>
       </div>
 
-      {/* Right Sidebar - TOC */}
-      <aside className="hidden xl:block w-64 flex-shrink-0">
-        <div className="sticky top-24">
-          <TOC items={tocItems} />
+      {/* API Overview */}
+      <div className="mb-12">
+        <Alert variant="info">
+          <AlertTitle>API Overview</AlertTitle>
+          <AlertDescription>
+            CrudX Framework automatically generates RESTful APIs for all your entities. 
+            Each entity gets a complete set of CRUD endpoints with pagination, filtering, 
+            and validation built-in.
+          </AlertDescription>
+        </Alert>
+      </div>
+
+      {/* Common Headers */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Common Headers</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>HTTP Headers</CardTitle>
+            <CardDescription>
+              These headers are commonly used across all API endpoints
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-3 font-medium text-muted-foreground">Header</th>
+                    <th className="text-left py-3 font-medium text-muted-foreground">Description</th>
+                    <th className="text-left py-3 font-medium text-muted-foreground">Required</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {commonHeaders.map((header, index) => (
+                    <tr key={index} className="border-b border-border/50">
+                      <td className="py-3">
+                        <code className="text-foreground font-mono">{header.name}</code>
+                      </td>
+                      <td className="py-3 text-muted-foreground">{header.description}</td>
+                      <td className="py-3">
+                        <Badge 
+                          variant={header.required ? 'destructive' : 'secondary'}
+                          size="sm"
+                        >
+                          {header.required ? 'Required' : 'Optional'}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Status Codes */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">HTTP Status Codes</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {statusCodes.map((status, index) => (
+            <Card key={index} variant="outlined">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <Badge 
+                    variant={
+                      status.code >= 200 && status.code < 300 ? 'success' :
+                      status.code >= 400 && status.code < 500 ? 'warning' :
+                      status.code >= 500 ? 'destructive' : 'secondary'
+                    }
+                  >
+                    {status.code}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">{status.description}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </aside>
+      </div>
+
+      {/* Endpoints by Category */}
+      <div className="space-y-12">
+        {endpointCategories.map((category, index) => (
+          <div key={index}>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-foreground mb-2">{category.title}</h2>
+              <p className="text-muted-foreground">{category.description}</p>
+            </div>
+            
+            {category.endpoints.length > 0 ? (
+              <EndpointsTable endpoints={category.endpoints} />
+            ) : (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-muted-foreground">
+                    No endpoints available for this category yet.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Pagination</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle>List Endpoints Support Pagination</CardTitle>
+            <CardDescription>
+              All list endpoints support pagination using query parameters
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Query Parameters</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><code className="bg-muted px-2 py-1 rounded">page</code> - Page number (default: 1)</li>
+                  <li><code className="bg-muted px-2 py-1 rounded">size</code> - Items per page (default: 20)</li>
+                  <li><code className="bg-muted px-2 py-1 rounded">sort</code> - Sort field (e.g., "name,asc")</li>
+                  <li><code className="bg-muted px-2 py-1 rounded">search</code> - Search term for filtering</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-foreground mb-2">Example Request</h4>
+                <code className="block bg-muted p-3 rounded text-sm">
+                  GET /api/users?page=1&size=10&sort=name,asc&search=john
+                </code>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Error Handling */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Error Handling</h2>
+        <Alert variant="warning">
+          <AlertTitle>Error Response Format</AlertTitle>
+          <AlertDescription>
+            All error responses follow a consistent format with error codes, messages, 
+            and detailed validation information when applicable.
+          </AlertDescription>
+        </Alert>
+      </div>
     </div>
   );
-}
+};

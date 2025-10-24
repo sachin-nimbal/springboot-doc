@@ -1,241 +1,298 @@
-import { Link } from 'react-router-dom';
-import { Terminal, PackageCheck, Play } from 'lucide-react';
-import CodeBlock from '../components/CodeBlock';
-import Alert from '../components/Alert';
-import Badge from '../components/Badge';
-import Card from '../components/Card';
-import Tabs from '../components/Tabs';
-import Breadcrumbs from '../components/Breadcrumbs';
-import Pagination from '../components/Pagination';
-import TOC from '../components/TOC';
+import React from 'react';
+import { 
+  CheckCircleIcon, 
+  ExclamationTriangleIcon,
+  InformationCircleIcon 
+} from '@heroicons/react/24/outline';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/Card';
+import { Alert, AlertDescription, AlertTitle } from '../components/Alert';
+import { Badge } from '../components/Badge';
+import { CodeBlock } from '../components/CodeBlock';
 
-const tocItems = [
-  { id: 'prerequisites', title: 'Prerequisites', level: 2 },
-  { id: 'installation', title: 'Installation', level: 2 },
-  { id: 'project-setup', title: 'Project Setup', level: 2 },
-  { id: 'running', title: 'Running Your App', level: 2 },
-];
+export const GettingStarted: React.FC = () => {
+  const prerequisites = [
+    'Java 17 or higher',
+    'Maven 3.6+ or Gradle 7.0+',
+    'Spring Boot 3.0+',
+    'Database (MySQL, PostgreSQL, H2, etc.)'
+  ];
 
-export default function GettingStarted() {
-  const installTabs = [
+  const installationSteps = [
     {
-      id: 'npm',
-      label: 'npm',
-      content: (
-        <CodeBlock
-          code="npm install premium-docs"
-          language="bash"
-          showLineNumbers={false}
-        />
-      ),
+      title: 'Add CrudX Dependency',
+      description: 'Add the CrudX Spring Boot starter to your project.',
+      code: `<dependency>
+  <groupId>com.crudx</groupId>
+  <artifactId>crudx-spring-boot-starter</artifactId>
+  <version>1.0.0</version>
+</dependency>`,
+      language: 'xml',
+      filename: 'pom.xml'
     },
     {
-      id: 'yarn',
-      label: 'yarn',
-      content: (
-        <CodeBlock
-          code="yarn add premium-docs"
-          language="bash"
-          showLineNumbers={false}
-        />
-      ),
+      title: 'Configure Database',
+      description: 'Set up your database connection in application.yml.',
+      code: `spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/crudx_db
+    username: your_username
+    password: your_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true`,
+      language: 'yaml',
+      filename: 'application.yml'
     },
     {
-      id: 'pnpm',
-      label: 'pnpm',
-      content: (
-        <CodeBlock
-          code="pnpm add premium-docs"
-          language="bash"
-          showLineNumbers={false}
-        />
-      ),
+      title: 'Enable CrudX',
+      description: 'Add the @EnableCrudX annotation to your main application class.',
+      code: `@SpringBootApplication
+@EnableCrudX
+public class CrudXApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(CrudXApplication.class, args);
+    }
+}`,
+      language: 'java',
+      filename: 'CrudXApplication.java'
+    }
+  ];
+
+  const exampleEntity = `@Entity
+@Table(name = "users")
+@CrudXEntity(
+    path = "/users",
+    description = "User management endpoints"
+)
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, unique = true)
+    @CrudXField(
+        description = "User email address",
+        validation = @Validation(required = true, email = true)
+    )
+    private String email;
+    
+    @Column(nullable = false)
+    @CrudXField(
+        description = "User full name",
+        validation = @Validation(required = true, minLength = 2)
+    )
+    private String name;
+    
+    @Column(name = "created_at")
+    @CrudXField(
+        description = "User creation timestamp",
+        readOnly = true
+    )
+    private LocalDateTime createdAt;
+    
+    // Constructors, getters, and setters...
+    
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+}`;
+
+  const configurationOptions = [
+    {
+      key: 'crudx.api.base-path',
+      description: 'Base path for all generated API endpoints',
+      default: '/api',
+      type: 'String'
     },
+    {
+      key: 'crudx.security.enabled',
+      description: 'Enable security features',
+      default: 'true',
+      type: 'Boolean'
+    },
+    {
+      key: 'crudx.cache.enabled',
+      description: 'Enable caching for read operations',
+      default: 'true',
+      type: 'Boolean'
+    },
+    {
+      key: 'crudx.pagination.default-size',
+      description: 'Default page size for paginated endpoints',
+      default: '20',
+      type: 'Integer'
+    }
   ];
 
   return (
-    <div className="flex gap-8">
-      <div className="flex-1 min-w-0">
-        <Breadcrumbs
-          items={[
-            { label: 'Getting Started' },
-          ]}
-          className="mb-6"
-        />
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-foreground mb-4">Getting Started</h1>
+        <p className="text-xl text-muted-foreground">
+          Learn how to set up CrudX Framework in your Spring Boot application and start building APIs in minutes.
+        </p>
+      </div>
 
-        <div className="mb-8">
-          <Badge variant="success" className="mb-4">
-            Quick Start
-          </Badge>
-          <h1 className="text-[clamp(2rem,4vw+1rem,3rem)] font-bold tracking-tight mb-4">
-            Getting Started
-          </h1>
-          <p className="text-[clamp(1rem,2vw+0.5rem,1.5rem)] text-muted-foreground">
-            Follow this guide to install and set up Premium Docs in your project.
-          </p>
+      {/* Prerequisites */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Prerequisites</h2>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <InformationCircleIcon className="h-5 w-5 mr-2 text-blue-500" />
+              Before You Begin
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">
+              Make sure you have the following installed and configured:
+            </p>
+            <ul className="space-y-2">
+              {prerequisites.map((prereq, index) => (
+                <li key={index} className="flex items-center">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-foreground">{prereq}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Installation Steps */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Installation</h2>
+        <div className="space-y-8">
+          {installationSteps.map((step, index) => (
+            <div key={index}>
+              <div className="flex items-center mb-4">
+                <Badge variant="default" className="mr-4">
+                  Step {index + 1}
+                </Badge>
+                <h3 className="text-xl font-semibold text-foreground">{step.title}</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">{step.description}</p>
+              <CodeBlock
+                code={step.code}
+                language={step.language}
+                filename={step.filename}
+              />
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* Prerequisites */}
-        <section id="prerequisites" className="prose mb-12">
-          <h2>Prerequisites</h2>
-          <p>Before you begin, make sure you have the following installed:</p>
-          
-          <div className="not-prose grid sm:grid-cols-3 gap-4 my-6">
-            <Card>
-              <div className="flex items-center gap-3 mb-2">
-                <Terminal className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">Node.js</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Version 18.0 or higher
-              </p>
-            </Card>
-
-            <Card>
-              <div className="flex items-center gap-3 mb-2">
-                <PackageCheck className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">Package Manager</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                npm, yarn, or pnpm
-              </p>
-            </Card>
-
-            <Card>
-              <div className="flex items-center gap-3 mb-2">
-                <Play className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">TypeScript</h3>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Version 5.0 or higher
-              </p>
-            </Card>
-          </div>
-
-          <Alert variant="info" title="Note">
-            We recommend using the latest LTS version of Node.js for the best
-            experience and compatibility.
-          </Alert>
-        </section>
-
-        {/* Installation */}
-        <section id="installation" className="prose mb-12">
-          <h2>Installation</h2>
-          <p>
-            Install Premium Docs using your preferred package manager:
-          </p>
-          
-          <div className="not-prose">
-            <Tabs tabs={installTabs} />
-          </div>
-        </section>
-
-        {/* Project Setup */}
-        <section id="project-setup" className="prose mb-12">
-          <h2>Project Setup</h2>
-          <p>
-            Create a new project or add Premium Docs to an existing one. Here's a
-            basic setup:
-          </p>
-
-          <h3>1. Create your main application file</h3>
-          <div className="not-prose">
-            <CodeBlock
-              code={`// src/index.ts
-import { createApp } from 'premium-docs';
-import { UserController } from './controllers/user.controller';
-
-const app = createApp({
-  port: 3000,
-  cors: true,
-  controllers: [UserController],
-});
-
-app.listen(() => {
-  console.log('Server is running on http://localhost:3000');
-});`}
-              language="typescript"
-              title="src/index.ts"
-            />
-          </div>
-
-          <h3>2. Create your first controller</h3>
-          <div className="not-prose">
-            <CodeBlock
-              code={`// src/controllers/user.controller.ts
-import { Controller, Get, Post, Body } from 'premium-docs';
-
-@Controller('/api/users')
-export class UserController {
-  @Get()
-  async getAllUsers() {
-    return { users: [] };
-  }
-
-  @Post()
-  async createUser(@Body() userData: any) {
-    return { success: true, user: userData };
-  }
-}`}
-              language="typescript"
-              title="src/controllers/user.controller.ts"
-            />
-          </div>
-
-          <Alert variant="success" title="TypeScript Configuration">
-            Make sure to enable <code>experimentalDecorators</code> and{' '}
-            <code>emitDecoratorMetadata</code> in your{' '}
-            <code>tsconfig.json</code>.
-          </Alert>
-        </section>
-
-        {/* Running */}
-        <section id="running" className="prose mb-12">
-          <h2>Running Your Application</h2>
-          <p>Start your application with:</p>
-          
-          <div className="not-prose">
-            <CodeBlock
-              code="npm run dev"
-              language="bash"
-              showLineNumbers={false}
-            />
-          </div>
-
-          <p>
-            Your application should now be running at{' '}
-            <code>http://localhost:3000</code>. Try accessing your first endpoint:
-          </p>
-
-          <div className="not-prose">
-            <CodeBlock
-              code="curl http://localhost:3000/api/users"
-              language="bash"
-              showLineNumbers={false}
-            />
-          </div>
-
-          <Alert variant="info" title="What's Next?">
-            Now that you have a basic setup, explore our guides on{' '}
-            <Link to="/annotations">Annotations</Link>,{' '}
-            <Link to="/entities">Entities</Link>, and{' '}
-            <Link to="/rest-endpoints">REST Endpoints</Link> to build more advanced
-            features.
-          </Alert>
-        </section>
-
-        <Pagination
-          prev={{ title: 'Overview', path: '/overview' }}
-          next={{ title: 'Annotations', path: '/annotations' }}
+      {/* Example Entity */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Create Your First Entity</h2>
+        <Alert variant="info" className="mb-6">
+          <AlertTitle>Pro Tip</AlertTitle>
+          <AlertDescription>
+            Use CrudX annotations to customize your API endpoints and add validation rules.
+          </AlertDescription>
+        </Alert>
+        
+        <CodeBlock
+          code={exampleEntity}
+          language="java"
+          filename="User.java"
         />
       </div>
 
-      {/* Right Sidebar - TOC */}
-      <aside className="hidden xl:block w-64 flex-shrink-0">
-        <div className="sticky top-24">
-          <TOC items={tocItems} />
+      {/* Configuration */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Configuration</h2>
+        <p className="text-muted-foreground mb-6">
+          Customize CrudX behavior using application properties:
+        </p>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left py-3 font-medium text-muted-foreground">Property</th>
+                <th className="text-left py-3 font-medium text-muted-foreground">Description</th>
+                <th className="text-left py-3 font-medium text-muted-foreground">Default</th>
+                <th className="text-left py-3 font-medium text-muted-foreground">Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {configurationOptions.map((option, index) => (
+                <tr key={index} className="border-b border-border/50">
+                  <td className="py-3">
+                    <code className="text-foreground font-mono text-sm">{option.key}</code>
+                  </td>
+                  <td className="py-3 text-muted-foreground">{option.description}</td>
+                  <td className="py-3">
+                    <code className="bg-muted px-2 py-1 rounded text-sm">{option.default}</code>
+                  </td>
+                  <td className="py-3 text-muted-foreground">{option.type}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </aside>
+      </div>
+
+      {/* Next Steps */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Next Steps</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Learn Annotations</CardTitle>
+              <CardDescription>
+                Explore the powerful annotation system that drives CrudX functionality.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <a
+                href="/annotations"
+                className="text-primary hover:text-primary/80 font-medium"
+              >
+                View Annotations Guide →
+              </a>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>API Reference</CardTitle>
+              <CardDescription>
+                Browse the complete API documentation and endpoint reference.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <a
+                href="/rest-endpoints"
+                className="text-primary hover:text-primary/80 font-medium"
+              >
+                View API Reference →
+              </a>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Troubleshooting */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-foreground mb-6">Troubleshooting</h2>
+        <Alert variant="warning">
+          <AlertTitle>Common Issues</AlertTitle>
+          <AlertDescription>
+            <ul className="list-disc list-inside space-y-2 mt-2">
+              <li>Make sure your database is running and accessible</li>
+              <li>Verify that all required dependencies are included</li>
+              <li>Check that your entity classes are in the correct package</li>
+              <li>Ensure your Spring Boot version is compatible (3.0+)</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      </div>
     </div>
   );
-}
+};

@@ -1,29 +1,21 @@
-import { Moon, Sun } from 'lucide-react';
+import React from 'react';
+import { SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { useTheme } from '../hooks/useTheme';
-import { motion } from 'framer-motion';
 
-export default function ThemeToggle() {
+export const ThemeToggle: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (
     <button
       onClick={toggleTheme}
-      className="relative w-10 h-10 rounded-lg border border-border bg-background hover:bg-accent hover:text-accent-foreground focus-ring transition-colors"
+      className="p-2 rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
     >
-      <motion.div
-        initial={false}
-        animate={{ rotate: theme === 'dark' ? 180 : 0 }}
-        transition={{ duration: 0.3 }}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        {theme === 'light' ? (
-          <Sun className="w-5 h-5" />
-        ) : (
-          <Moon className="w-5 h-5" />
-        )}
-      </motion.div>
+      {theme === 'light' ? (
+        <MoonIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+      ) : (
+        <SunIcon className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+      )}
     </button>
   );
-}
+};

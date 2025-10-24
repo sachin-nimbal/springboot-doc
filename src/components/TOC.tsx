@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { useScrollSpy } from '../hooks/useScrollSpy';
-import { cn } from '../utils/cn';
 
 interface TOCItem {
   id: string;
@@ -9,54 +9,54 @@ interface TOCItem {
 
 interface TOCProps {
   items: TOCItem[];
-  className?: string;
 }
 
-export default function TOC({ items, className }: TOCProps) {
-  const activeId = useScrollSpy(
-    items.map((item) => item.id),
-    150
-  );
+export const TOC: React.FC<TOCProps> = ({ items }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const activeId = useScrollSpy(items.map(item => item.id));
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Show TOC when scrolled past 200px and there's more content below
+      setIsVisible(scrollTop > 200 && scrollTop < documentHeight - windowHeight - 100);
+    };
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-    }
-  };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  if (!isVisible || items.length === 0) {
+    return null;
+  }
 
   return (
-    <nav
-      aria-label="Table of contents"
-      className={cn('space-y-2', className)}
-    >
-      <h4 className="text-sm font-semibold mb-4">On this page</h4>
-      <ul className="space-y-2 text-sm">
-        {items.map((item) => (
-          <li key={item.id} style={{ paddingLeft: `${(item.level - 2) * 12}px` }}>
+    <div className="fixed right-8 top-1/2 transform -translate-y-1/2 w-64 max-h-96 overflow-y-auto bg-background/95 backdrop-blur border border-border rounded-lg shadow-lg z-40">
+      <div className="p-4">
+        <h3 className="text-sm font-semibold text-foreground mb-3">On this page</h3>
+        <nav className="space-y-1">
+          {items.map((item) => (
             <a
+              key={item.id}
               href={`#${item.id}`}
-              onClick={(e) => handleClick(e, item.id)}
-              className={cn(
-                'block py-1 transition-colors border-l-2 pl-3 focus-ring rounded',
-                activeId === item.id
-                  ? 'border-primary text-primary font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-              )}
+              className={`
+                block text-sm transition-colors duration-200
+                ${item.level === 1 ? 'font-medium' : 'font-normal'}
+                ${item.level === 2 ? 'ml-2' : item.level === 3 ? 'ml-4' : ''}
+                ${activeId === item.id
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+                }
+              `}
             >
               {item.title}
             </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          ))}
+        </nav>
+      </div>
+    </div>
   );
-}
+};

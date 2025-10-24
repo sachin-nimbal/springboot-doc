@@ -1,55 +1,79 @@
-import { Suspense, lazy } from 'react';
-import { cn } from '../utils/cn';
-import { getLanguageLabel } from '../utils/highlight';
-import CopyButton from './CopyButton';
-
-// Lazy load the syntax highlighter to reduce initial bundle size
-const SyntaxHighlighter = lazy(() => import('./SyntaxHighlighter'));
+import React, { useState } from 'react';
+import { Highlight, themes } from 'prism-react-renderer';
+import { CopyButton } from './CopyButton';
 
 interface CodeBlockProps {
   code: string;
   language: string;
+  filename?: string;
   showLineNumbers?: boolean;
-  className?: string;
-  title?: string;
 }
 
-export default function CodeBlock({
+export const CodeBlock: React.FC<CodeBlockProps> = ({
   code,
   language,
+  filename,
   showLineNumbers = true,
-  className,
-  title,
-}: CodeBlockProps) {
+}) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy code:', err);
+    }
+  };
+
   return (
-    <div className={cn('relative rounded-lg overflow-hidden border border-border my-4', className)}>
+    <div className="relative group">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
-        <div className="flex items-center gap-2">
-          {title && <span className="text-xs font-medium">{title}</span>}
-          <span className="text-xs text-muted-foreground label-text">
-            {getLanguageLabel(language)}
-          </span>
+      {(filename || language) && (
+        <div className="flex items-center justify-between px-4 py-2 bg-muted border-b border-border rounded-t-lg">
+          <div className="flex items-center space-x-2">
+            {filename && (
+              <span className="text-sm font-medium text-foreground">{filename}</span>
+            )}
+            {language && (
+              <span className="px-2 py-1 text-xs font-medium text-muted-foreground bg-muted-foreground/10 rounded">
+                {language}
+              </span>
+            )}
+          </div>
+          <CopyButton onCopy={handleCopy} copied={copied} />
         </div>
-        <CopyButton text={code} />
-      </div>
+      )}
 
       {/* Code */}
       <div className="relative">
-        <Suspense
-          fallback={
-            <pre className="p-4 overflow-x-auto bg-muted/30 scrollbar-thin">
-              <code className="text-sm font-mono">{code}</code>
-            </pre>
-          }
+        <Highlight
+          theme={themes.vsDark}
+          code={code}
+          language={language}
         >
-          <SyntaxHighlighter
-            code={code}
-            language={language}
-            showLineNumbers={showLineNumbers}
-          />
-        </Suspense>
+          {({ className, style, tokens, getLineProps, getTokenProps }) => (
+            <pre
+              className={`${className} rounded-lg ${filename ? 'rounded-t-none' : ''} overflow-x-auto scrollbar-thin`}
+              style={style}
+            >
+              {tokens.map((line, i) => (
+                <div key={i} {...getLineProps({ line })}>
+                  {showLineNumbers && (
+                    <span className="inline-block w-8 text-muted-foreground select-none mr-4">
+                      {i + 1}
+                    </span>
+                  )}
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </div>
+              ))}
+            </pre>
+          )}
+        </Highlight>
       </div>
     </div>
   );
-}
+};

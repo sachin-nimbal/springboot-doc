@@ -1,47 +1,29 @@
-import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
-import { copyToClipboard } from '../utils/clipboard';
-import { cn } from '../utils/cn';
+import React from 'react';
+import { CheckIcon, ClipboardIcon } from '@heroicons/react/24/outline';
 
 interface CopyButtonProps {
-  text: string;
-  className?: string;
+  onCopy: () => void;
+  copied: boolean;
 }
 
-export default function CopyButton({ text, className }: CopyButtonProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    const success = await copyToClipboard(text);
-    if (success) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
+export const CopyButton: React.FC<CopyButtonProps> = ({ onCopy, copied }) => {
   return (
     <button
-      onClick={handleCopy}
-      className={cn(
-        'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium',
-        'rounded-md border border-border bg-background',
-        'hover:bg-accent hover:text-accent-foreground',
-        'focus-ring transition-colors',
-        className
-      )}
-      aria-label={copied ? 'Copied' : 'Copy to clipboard'}
+      onClick={onCopy}
+      className="flex items-center space-x-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors duration-200"
+      title={copied ? 'Copied!' : 'Copy to clipboard'}
     >
       {copied ? (
         <>
-          <Check className="w-3.5 h-3.5" />
-          Copied!
+          <CheckIcon className="h-3 w-3" />
+          <span>Copied!</span>
         </>
       ) : (
         <>
-          <Copy className="w-3.5 h-3.5" />
-          Copy
+          <ClipboardIcon className="h-3 w-3" />
+          <span>Copy</span>
         </>
       )}
     </button>
   );
-}
+};

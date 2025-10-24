@@ -1,172 +1,69 @@
-import { useState, useEffect, useRef } from 'react';
-import { Search, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { cn } from '../utils/cn';
-
-interface SearchResult {
-  title: string;
-  path: string;
-  excerpt: string;
-}
-
-// Mock search data - in production, this would come from a search index
-const searchData: SearchResult[] = [
-  { title: 'Overview', path: '/overview', excerpt: 'Get started with the documentation' },
-  { title: 'Getting Started', path: '/getting-started', excerpt: 'Quick start guide and installation' },
-  { title: 'Annotations', path: '/annotations', excerpt: 'Learn about annotations and decorators' },
-  { title: 'Entities', path: '/entities', excerpt: 'Working with entities and models' },
-  { title: 'REST Endpoints', path: '/rest-endpoints', excerpt: 'API endpoints and HTTP methods' },
-];
+import React, { useState, useRef, useEffect } from 'react';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchBoxProps {
-  isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
-export default function SearchBox({ isOpen, onClose }: SearchBoxProps) {
+export const SearchBox: React.FC<SearchBoxProps> = ({ onClose }) => {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    if (onClose) {
+      inputRef.current?.focus();
     }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (query.trim()) {
-      const filtered = searchData.filter(
-        (item) =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.excerpt.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
-      setSelectedIndex(0);
-    } else {
-      setResults([]);
-    }
-  }, [query]);
+  }, [onClose]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % results.length);
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
-      navigate(results[selectedIndex].path);
+    if (e.key === 'Escape' && onClose) {
       onClose();
-      setQuery('');
     }
   };
 
-  const handleSelect = (path: string) => {
-    navigate(path);
-    onClose();
-    setQuery('');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement search functionality
+    console.log('Search query:', query);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-      />
-
-      {/* Search Modal */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4"
-      >
-        <div className="bg-background border border-border rounded-lg shadow-2xl overflow-hidden">
-          {/* Search Input */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-            <Search className="w-5 h-5 text-muted-foreground" />
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Search documentation..."
-              className="flex-1 bg-transparent outline-none text-sm"
-              aria-label="Search documentation"
-            />
+    <div className="relative w-full">
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search documentation... (⌘K)"
+            className="w-full pl-10 pr-10 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
+          />
+          {onClose && (
             <button
+              type="button"
               onClick={onClose}
-              className="p-1 hover:bg-accent rounded focus-ring"
-              aria-label="Close search"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-muted rounded"
             >
-              <X className="w-4 h-4" />
+              <XMarkIcon className="h-4 w-4 text-muted-foreground" />
             </button>
-          </div>
-
-          {/* Results */}
-          <AnimatePresence>
-            {results.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="max-h-96 overflow-y-auto scrollbar-thin"
-              >
-                {results.map((result, index) => (
-                  <button
-                    key={result.path}
-                    onClick={() => handleSelect(result.path)}
-                    className={cn(
-                      'w-full text-left px-4 py-3 hover:bg-accent transition-colors',
-                      index === selectedIndex && 'bg-accent'
-                    )}
-                  >
-                    <div className="font-medium text-sm mb-1">{result.title}</div>
-                    <div className="text-xs text-muted-foreground">{result.excerpt}</div>
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* No results */}
-          {query && results.length === 0 && (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No results found for "{query}"
-            </div>
-          )}
-
-          {/* Help text */}
-          {!query && (
-            <div className="px-4 py-3 text-xs text-muted-foreground border-t border-border flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">↑</kbd>
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">↓</kbd>
-                <span>to navigate</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">↵</kbd>
-                <span>to select</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded">esc</kbd>
-                <span>to close</span>
-              </div>
-            </div>
           )}
         </div>
-      </motion.div>
-    </>
+      </form>
+
+      {/* Search Results Dropdown */}
+      {isFocused && query && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+          <div className="p-4 text-sm text-muted-foreground">
+            Search results for "{query}" will appear here
+          </div>
+        </div>
+      )}
+    </div>
   );
-}
+};

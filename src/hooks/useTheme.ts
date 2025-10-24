@@ -1,36 +1,27 @@
 import { useState, useEffect } from 'react';
+import { getTheme, setTheme, toggleTheme as toggleThemeUtil, type Theme } from '../utils/theme';
 
-type Theme = 'light' | 'dark';
-
-const STORAGE_KEY = 'theme-dark';
-
-/**
- * Custom hook for theme management with localStorage persistence
- * Uses system preference as fallback
- */
-export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === '1') return 'dark';
-    if (stored === '') return 'light';
-    
-    // Fallback to system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
-    return 'light';
-  });
+export const useTheme = () => {
+  const [theme, setThemeState] = useState<Theme>('light');
 
   useEffect(() => {
-    // Persist theme to localStorage
-    localStorage.setItem(STORAGE_KEY, theme === 'dark' ? '1' : '');
-  }, [theme]);
+    const currentTheme = getTheme();
+    setThemeState(currentTheme);
+  }, []);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+    const newTheme = toggleThemeUtil();
+    setThemeState(newTheme);
   };
 
-  return { theme, setTheme, toggleTheme };
-}
+  const changeTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
+    setThemeState(newTheme);
+  };
+
+  return {
+    theme,
+    toggleTheme,
+    changeTheme,
+  };
+};
