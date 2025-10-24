@@ -1,44 +1,107 @@
 /**
- * Utility for syntax highlighting with lazy loading
+ * Language detection and syntax highlighting utilities
  */
 
-export interface HighlightResult {
-  tokens: Array<{
-    types: string[];
-    content: string;
-  }>;
-  language: string;
+export interface HighlightOptions {
+  language?: string;
+  showLineNumbers?: boolean;
+  highlightLines?: number[];
 }
 
 /**
- * Lazy load the syntax highlighter to reduce initial bundle size
+ * Detect programming language from code content
  */
-export async function loadHighlighter() {
-  const { default: Highlight, Prism } = await import('prism-react-renderer');
-  return { Highlight, Prism };
+export function detectLanguage(code: string): string {
+  // Java/Spring Boot detection
+  if (
+    code.includes('@RestController') ||
+    code.includes('@Service') ||
+    code.includes('@Entity') ||
+    code.includes('public class') ||
+    code.includes('import org.springframework')
+  ) {
+    return 'java';
+  }
+
+  // JavaScript/TypeScript detection
+  if (
+    code.includes('function') ||
+    code.includes('=>') ||
+    code.includes('const ') ||
+    code.includes('let ') ||
+    code.includes('import ')
+  ) {
+    if (code.includes(': string') || code.includes(': number') || code.includes('interface ')) {
+      return 'typescript';
+    }
+    return 'javascript';
+  }
+
+  // JSON detection
+  if (code.trim().startsWith('{') || code.trim().startsWith('[')) {
+    try {
+      JSON.parse(code);
+      return 'json';
+    } catch {
+      // Not valid JSON
+    }
+  }
+
+  // Shell/Bash detection
+  if (
+    code.includes('#!/bin/bash') ||
+    code.includes('npm ') ||
+    code.includes('yarn ') ||
+    code.includes('curl ') ||
+    code.startsWith('$ ')
+  ) {
+    return 'bash';
+  }
+
+  // XML detection
+  if (code.trim().startsWith('<') && code.includes('</')) {
+    return 'xml';
+  }
+
+  // SQL detection
+  if (
+    code.toUpperCase().includes('SELECT ') ||
+    code.toUpperCase().includes('INSERT ') ||
+    code.toUpperCase().includes('UPDATE ') ||
+    code.toUpperCase().includes('DELETE ')
+  ) {
+    return 'sql';
+  }
+
+  return 'text';
 }
 
 /**
- * Get language label for display
+ * Get language display name
  */
 export function getLanguageLabel(language: string): string {
   const labels: Record<string, string> = {
-    tsx: 'TypeScript',
-    ts: 'TypeScript',
-    jsx: 'JavaScript',
-    js: 'JavaScript',
-    json: 'JSON',
-    bash: 'Shell',
-    sh: 'Shell',
-    css: 'CSS',
-    html: 'HTML',
-    python: 'Python',
-    py: 'Python',
+    javascript: 'JavaScript',
+    typescript: 'TypeScript',
     java: 'Java',
-    go: 'Go',
-    rust: 'Rust',
+    python: 'Python',
+    bash: 'Shell',
+    json: 'JSON',
+    xml: 'XML',
     sql: 'SQL',
+    html: 'HTML',
+    css: 'CSS',
+    yaml: 'YAML',
+    markdown: 'Markdown',
+    text: 'Text',
   };
-  
-  return labels[language] || language.toUpperCase();
+
+  return labels[language.toLowerCase()] || language.toUpperCase();
+}
+
+/**
+ * Format code with proper indentation
+ */
+export function formatCode(code: string): string {
+  return code.trim();
 }

@@ -1,26 +1,34 @@
 import { useState, useEffect } from 'react';
 
 /**
- * Hook to track which section is currently in view
- * Used for highlighting active items in TOC and sidebar
+ * Custom hook for tracking the currently visible section while scrolling
+ * Used for highlighting active items in table of contents
  */
-export function useScrollSpy(sectionIds: string[], offset = 100) {
+export function useScrollSpy(selectors: string[], offset = 100) {
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + offset;
+      // Get all elements matching the selectors
+      const elements = selectors
+        .map((selector) => document.querySelector(selector))
+        .filter((el): el is HTMLElement => el !== null);
 
-      // Find the section that's currently in view
-      for (let i = sectionIds.length - 1; i >= 0; i--) {
-        const section = document.getElementById(sectionIds[i]);
-        if (section) {
-          const sectionTop = section.offsetTop;
-          if (scrollPosition >= sectionTop) {
-            setActiveId(sectionIds[i]);
-            return;
-          }
+      // Find the element currently in view
+      for (let i = elements.length - 1; i >= 0; i--) {
+        const element = elements[i];
+        const rect = element.getBoundingClientRect();
+
+        // Check if element is in viewport (with offset for better UX)
+        if (rect.top <= offset && rect.bottom >= 0) {
+          setActiveId(element.id);
+          return;
         }
+      }
+
+      // If we're at the top of the page, highlight the first section
+      if (window.scrollY < offset && elements.length > 0) {
+        setActiveId(elements[0].id);
       }
     };
 
@@ -29,8 +37,12 @@ export function useScrollSpy(sectionIds: string[], offset = 100) {
 
     // Listen to scroll events
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [sectionIds, offset]);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [selectors, offset]);
 
   return activeId;
 }

@@ -1,83 +1,107 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '../utils/cn';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { cn } from '@/utils/cn';
 
-interface Tab {
-  id: string;
-  label: string;
-  content: React.ReactNode;
+interface TabsContextValue {
+  activeTab: string;
+  setActiveTab: (value: string) => void;
 }
 
+const TabsContext = createContext<TabsContextValue | undefined>(undefined);
+
 interface TabsProps {
-  tabs: Tab[];
-  defaultTab?: string;
+  children: ReactNode;
+  defaultValue: string;
   className?: string;
 }
 
-export default function Tabs({ tabs, defaultTab, className }: TabsProps) {
-  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.id);
-
-  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      const nextIndex = (index + 1) % tabs.length;
-      setActiveTab(tabs[nextIndex].id);
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      const prevIndex = (index - 1 + tabs.length) % tabs.length;
-      setActiveTab(tabs[prevIndex].id);
-    }
-  };
+/**
+ * Tabs component for organizing content into multiple panels
+ * Accessible with keyboard navigation
+ */
+export default function Tabs({ children, defaultValue, className }: TabsProps) {
+  const [activeTab, setActiveTab] = useState(defaultValue);
 
   return (
-    <div className={cn('w-full', className)}>
-      {/* Tab List */}
-      <div
-        role="tablist"
-        className="flex gap-1 border-b border-border overflow-x-auto scrollbar-thin"
-      >
-        {tabs.map((tab, index) => (
-          <button
-            key={tab.id}
-            role="tab"
-            aria-selected={activeTab === tab.id}
-            aria-controls={`panel-${tab.id}`}
-            id={`tab-${tab.id}`}
-            tabIndex={activeTab === tab.id ? 0 : -1}
-            onClick={() => setActiveTab(tab.id)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            className={cn(
-              'relative px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap focus-ring',
-              activeTab === tab.id
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            {tab.label}
-            {activeTab === tab.id && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              />
-            )}
-          </button>
-        ))}
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className={cn('w-full', className)}>
+        {children}
       </div>
+    </TabsContext.Provider>
+  );
+}
 
-      {/* Tab Panels */}
-      {tabs.map((tab) => (
-        <div
-          key={tab.id}
-          role="tabpanel"
-          id={`panel-${tab.id}`}
-          aria-labelledby={`tab-${tab.id}`}
-          hidden={activeTab !== tab.id}
-          className="py-4"
-        >
-          {activeTab === tab.id && tab.content}
-        </div>
-      ))}
+interface TabsListProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function TabsList({ children, className }: TabsListProps) {
+  return (
+    <div
+      role="tablist"
+      className={cn(
+        'inline-flex h-10 items-center justify-start rounded-lg bg-muted p-1 text-muted-foreground',
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+interface TabsTriggerProps {
+  children: ReactNode;
+  value: string;
+  className?: string;
+}
+
+export function TabsTrigger({ children, value, className }: TabsTriggerProps) {
+  const context = useContext(TabsContext);
+  if (!context) throw new Error('TabsTrigger must be used within Tabs');
+
+  const { activeTab, setActiveTab } = context;
+  const isActive = activeTab === value;
+
+  return (
+    <button
+      role="tab"
+      aria-selected={isActive}
+      data-state={isActive ? 'active' : 'inactive'}
+      onClick={() => setActiveTab(value)}
+      className={cn(
+        'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        isActive
+          ? 'bg-background text-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground',
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+interface TabsContentProps {
+  children: ReactNode;
+  value: string;
+  className?: string;
+}
+
+export function TabsContent({ children, value, className }: TabsContentProps) {
+  const context = useContext(TabsContext);
+  if (!context) throw new Error('TabsContent must be used within Tabs');
+
+  const { activeTab } = context;
+
+  if (activeTab !== value) return null;
+
+  return (
+    <div
+      role="tabpanel"
+      data-state={activeTab === value ? 'active' : 'inactive'}
+      className={cn('mt-4 ring-offset-background focus-visible:outline-none', className)}
+    >
+      {children}
     </div>
   );
 }

@@ -1,54 +1,60 @@
-import { Suspense, lazy } from 'react';
-import { cn } from '../utils/cn';
-import { getLanguageLabel } from '../utils/highlight';
+import { ReactNode } from 'react';
 import CopyButton from './CopyButton';
-
-// Lazy load the syntax highlighter to reduce initial bundle size
-const SyntaxHighlighter = lazy(() => import('./SyntaxHighlighter'));
+import SyntaxHighlighter from './SyntaxHighlighter';
+import { detectLanguage, getLanguageLabel } from '@/utils/highlight';
+import { cn } from '@/utils/cn';
 
 interface CodeBlockProps {
   code: string;
-  language: string;
-  showLineNumbers?: boolean;
-  className?: string;
+  language?: string;
   title?: string;
+  showLineNumbers?: boolean;
+  children?: ReactNode;
+  className?: string;
 }
 
+/**
+ * CodeBlock component with syntax highlighting and copy functionality
+ * Automatically detects language if not provided
+ */
 export default function CodeBlock({
   code,
   language,
-  showLineNumbers = true,
-  className,
   title,
+  showLineNumbers = false,
+  children,
+  className,
 }: CodeBlockProps) {
+  const detectedLanguage = language || detectLanguage(code);
+  const languageLabel = getLanguageLabel(detectedLanguage);
+
   return (
-    <div className={cn('relative rounded-lg overflow-hidden border border-border my-4', className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
-        <div className="flex items-center gap-2">
-          {title && <span className="text-xs font-medium">{title}</span>}
-          <span className="text-xs text-muted-foreground label-text">
-            {getLanguageLabel(language)}
+    <div className={cn('group relative my-6 overflow-hidden rounded-lg border border-border', className)}>
+      {/* Header with language label and copy button */}
+      <div className="flex items-center justify-between border-b border-border bg-muted/50 px-4 py-2">
+        <div className="flex items-center space-x-2">
+          {title && (
+            <>
+              <span className="text-sm font-medium text-foreground">{title}</span>
+              <span className="text-muted-foreground">•</span>
+            </>
+          )}
+          <span className="text-xs font-medium uppercase text-muted-foreground">
+            {languageLabel}
           </span>
         </div>
         <CopyButton text={code} />
       </div>
 
-      {/* Code */}
-      <div className="relative">
-        <Suspense
-          fallback={
-            <pre className="p-4 overflow-x-auto bg-muted/30 scrollbar-thin">
-              <code className="text-sm font-mono">{code}</code>
-            </pre>
-          }
-        >
+      {/* Code content */}
+      <div className="overflow-x-auto">
+        {children || (
           <SyntaxHighlighter
             code={code}
-            language={language}
+            language={detectedLanguage}
             showLineNumbers={showLineNumbers}
           />
-        </Suspense>
+        )}
       </div>
     </div>
   );
