@@ -1,6 +1,6 @@
 {
   "overview": [
-    { "id": "introduction", "title": "Introduction", "level": 2 },
+    { "id": "overview", "title": "Introduction", "level": 2 },
     { "id": "key-features", "title": "Key Features", "level": 2 },
     { "id": "quick-example", "title": "Quick Example", "level": 2 },
     { "id": "next-steps", "title": "Next Steps", "level": 2 }

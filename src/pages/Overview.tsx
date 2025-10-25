@@ -1,203 +1,208 @@
-import { motion } from 'framer-motion';
-import { ArrowRightIcon, BoltIcon, ShieldCheckIcon, CodeBracketSquareIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import Card from '../components/Card';
-import Badge from '../components/Badge';
-import Alert from '../components/Alert';
-import Breadcrumbs from '../components/Breadcrumbs';
-import Pagination from '../components/Pagination';
-import TOC from '../components/TOC';
+import { motion } from "framer-motion";
+import {
+  BoltIcon,
+  ShieldCheckIcon,
+  CodeBracketSquareIcon,
+  SparklesIcon,
+  RocketLaunchIcon,
+  CircleStackIcon,
+  ChartBarIcon,
+  RectangleStackIcon,
+  LockClosedIcon,
+  ListBulletIcon,
+  ArrowPathIcon,
+  CpuChipIcon,
+  ExclamationTriangleIcon,
+  BanknotesIcon,
+  GlobeAltIcon,
+  BookOpenIcon,
+  ArrowRightIcon,
+} from "@heroicons/react/24/outline";
+import type { ComponentType, SVGProps } from "react";
+import { Link } from "react-router-dom";
+import Card from "../components/Card";
+import Badge from "../components/Badge";
+import Alert from "../components/Alert";
+import Breadcrumbs from "../components/Breadcrumbs";
+import Pagination from "../components/Pagination";
+import TOC from "../components/TOC";
+import overviewData from "../data/overview.json";
+import CodeBlock from "../components/CodeBlock";
 
-const tocItems = [
-  { id: 'introduction', title: 'Introduction', level: 2 },
-  { id: 'key-features', title: 'Key Features', level: 2 },
-  { id: 'quick-example', title: 'Quick Example', level: 2 },
-  { id: 'next-steps', title: 'Next Steps', level: 2 },
-];
+// Map icon names to actual Heroicon components
+const iconMap: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
+  BoltIcon,
+  ShieldCheckIcon,
+  CodeBracketSquareIcon,
+  SparklesIcon,
+  RocketLaunchIcon,
+  CircleStackIcon,
+  ChartBarIcon,
+  RectangleStackIcon,
+  LockClosedIcon,
+  ListBulletIcon,
+  ArrowPathIcon,
+  CpuChipIcon,
+  ExclamationTriangleIcon,
+  BanknotesIcon,
+  GlobeAltIcon,
+  BookOpenIcon,
+};
 
 export default function Overview() {
+  const {
+    breadcrumbs,
+    version,
+    hero,
+    features,
+    quickExample,
+    nextSteps,
+    pagination,
+    toc,
+  } = overviewData;
+
   return (
     <div className="flex gap-8">
       <div className="flex-1 min-w-0">
-        <Breadcrumbs items={[{ label: 'Overview' }]} className="mb-6" />
-
-        {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-12"
-        >
-          <Badge variant="info" className="mb-4">
-            Version 1.0.0
-          </Badge>
-          <h1 className="hero-title mb-4">
-            Welcome to <span className="gradient-text">Premium Docs</span>
-          </h1>
-          <p className="hero-subtitle max-w-3xl">
-            Build modern, scalable applications with our powerful and intuitive
-            framework. Get started in minutes with our comprehensive documentation.
-          </p>
-          <div className="flex flex-wrap gap-4 mt-8">
-            <Link
-              to="/getting-started"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 focus-ring transition-opacity"
-            >
-              Get Started
-              <ArrowRightIcon className="w-4 h-4" />
-            </Link>
-            <a
-              href="https://github.com"
-              className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg font-medium hover:bg-accent focus-ring transition-colors"
-            >
-              View on GitHub
-            </a>
-          </div>
-        </motion.div>
-
-        {/* Introduction */}
-        <section id="introduction" className="prose mb-12">
-          <h2>Introduction</h2>
-          <p>
-            Premium Docs provides a comprehensive framework for building modern web
-            applications with TypeScript, React, and REST APIs. Our framework is
-            designed with developer experience in mind, offering powerful features
-            while maintaining simplicity and elegance.
-          </p>
-          <Alert variant="info" title="New to Premium Docs?" className="my-6">
-            Check out our{' '}
-            <Link to="/getting-started" className="underline">
-              Getting Started guide
-            </Link>{' '}
-            to learn the basics and build your first application.
-          </Alert>
+        <section id="overview">
+          <Breadcrumbs items={breadcrumbs} className="mb-6" />
+          {/* Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-12"
+          >
+            <Badge variant="info" className="mb-4">
+              Current {version}
+            </Badge>
+            <h1 className="hero-title mb-4">
+              {hero.title}{" "}
+              <span className="gradient-text">{hero.highlight}</span>
+            </h1>
+            <p className="hero-subtitle max-w-3xl">{hero.subtitle}</p>
+            <div className="flex flex-wrap gap-4 mt-8">
+              <Link
+                to="/getting-started"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 focus-ring transition-opacity"
+              >
+                {hero.buttons.getStarted}
+                <ArrowRightIcon className="w-4 h-4" />
+              </Link>
+              <a
+                href="https://github.com"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg font-medium hover:bg-accent focus-ring transition-colors"
+              >
+                {hero.buttons.viewOnGithub}
+              </a>
+            </div>
+          </motion.div>
         </section>
-
         {/* Key Features */}
         <section id="key-features" className="mb-12">
           <h2 className="text-[clamp(1.5rem,3vw+0.5rem,2.25rem)] font-semibold tracking-tight mb-6">
-            Key Features
+            {features.title}
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card hover>
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <BoltIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Lightning Fast</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Built for performance with optimized rendering and minimal bundle
-                    sizes.
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            <Card hover>
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <ShieldCheckIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Type Safe</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Full TypeScript support with comprehensive type definitions and
-                    inference.
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            <Card hover>
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <CodeBracketSquareIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Developer Friendly</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Intuitive APIs and excellent developer experience with hot reload
-                    and debugging tools.
-                  </p>
-                </div>
-              </div>
-            </Card>
-
-            <Card hover>
-              <div className="flex items-start gap-4">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <SparklesIcon className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Modern Stack</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Built with the latest technologies including React 18, Vite 5, and
-                    TypeScript 5.
-                  </p>
-                </div>
-              </div>
-            </Card>
+            {features.items.map((item, idx) => {
+              const Icon = iconMap[item.icon];
+              return (
+                <Card key={idx} hover>
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
         {/* Quick Example */}
         <section id="quick-example" className="prose mb-12">
-          <h2>Quick Example</h2>
-          <p>Here's a simple example to get you started:</p>
+          <h2>{quickExample.title}</h2>
+          <p>{quickExample.intro}</p>
           <div className="not-prose">
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm font-mono">
-              <code>{`import { createApp } from 'premium-docs';
+            <CodeBlock
+              code={`
+                package com.crudx.examples.controller;
 
-const app = createApp({
-  port: 3000,
-  cors: true,
-});
+import io.github.sachinnimbal.crudx.core.dto.annotations.CrudXField;
+import io.github.sachinnimbal.crudx.core.dto.annotations.CrudXRequest;
+import io.github.sachinnimbal.crudx.core.dto.annotations.CrudXResponse;
+import io.github.sachinnimbal.crudx.core.model.CrudXMongoEntity;
+import io.github.sachinnimbal.crudx.web.CrudXController;
+import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello, World!' });
-});
+import static io.github.sachinnimbal.crudx.core.enums.CrudXOperation.*;
 
-app.listen();`}</code>
-            </pre>
+@RestController
+@RequestMapping("/api/students")
+public class StudentController extends CrudXController<StudentController.Student, String> {
+    @Document("students")
+    @Data
+    public static class Student extends CrudXMongoEntity<String> {
+        private String studentId, firstName, lastName, email, department;
+        private Double gpa;
+    }
+
+    @Data
+    @CrudXRequest(value = Student.class, operations = {CREATE, UPDATE})
+    public static class StudentRequest {
+        @CrudXField(required = true)
+        private String firstName, lastName, email, department;
+        private Double gpa;
+    }
+
+    @Data
+    @CrudXResponse(value = Student.class, operations = {GET_ID, GET_ALL})
+    public static class StudentResponse {
+        private String studentId, firstName, lastName, email, department;
+        private Double gpa;
+    }
+}
+   `}
+             language="java"
+             showLineNumbers={false}
+            />
           </div>
-          <Alert variant="success" title="Pro Tip" className="my-6">
-            Use our CLI tool to scaffold a new project with best practices and
-            recommended configurations built-in.
+          <Alert title={quickExample.alert.title} className="my-6">
+            {quickExample.alert.text}
           </Alert>
         </section>
 
         {/* Next Steps */}
         <section id="next-steps" className="prose mb-12">
-          <h2>Next Steps</h2>
-          <p>Ready to dive deeper? Here are some resources to explore:</p>
+          <h2>{nextSteps.title}</h2>
+          <p>{nextSteps.intro}</p>
           <ul>
-            <li>
-              <Link to="/getting-started">Getting Started</Link> - Installation and
-              setup guide
-            </li>
-            <li>
-              <Link to="/annotations">Annotations</Link> - Learn about decorators and
-              annotations
-            </li>
-            <li>
-              <Link to="/entities">Entities</Link> - Working with data models
-            </li>
-            <li>
-              <Link to="/rest-endpoints">REST Endpoints</Link> - Building RESTful APIs
-            </li>
+            {nextSteps.links.map((link, idx) => (
+              <li key={idx}>
+                <Link to={link.path}>{link.label}</Link> - {link.desc}
+              </li>
+            ))}
           </ul>
         </section>
 
-        <Pagination
-          next={{ title: 'Getting Started', path: '/getting-started' }}
-        />
+        <Pagination next={pagination.next} />
       </div>
 
       {/* Right Sidebar - TOC */}
       <aside className="hidden xl:block w-64 flex-shrink-0">
         <div className="sticky top-24">
-          <TOC items={tocItems} />
+          <TOC items={toc} />
         </div>
       </aside>
     </div>

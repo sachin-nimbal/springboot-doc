@@ -25,7 +25,7 @@ export default function GettingStarted() {
         <CodeBlock
           code="npm install premium-docs"
           language="bash"
-          showLineNumbers={false}
+          showLineNumbers={true}
         />
       ),
     },

@@ -1,8 +1,22 @@
 #root {
-  max-width: 1280px;
+  max-width: 100vw;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 1rem;
+  overflow-x: hidden;
+}
+
+/* Responsive padding */
+@media (min-width: 640px) {
+  #root {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  #root {
+    max-width: 1280px;
+  }
 }
 
 .logo {
@@ -11,9 +25,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -35,6 +51,8 @@
 
 .card {
   padding: 2em;
+  width: 100%;
+  max-width: 100%;
 }
 
 .read-the-docs {

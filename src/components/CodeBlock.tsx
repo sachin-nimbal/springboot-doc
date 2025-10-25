@@ -22,24 +22,36 @@ export default function CodeBlock({
   title,
 }: CodeBlockProps) {
   return (
-    <div className={cn('relative rounded-lg overflow-hidden border border-border my-4', className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border">
-        <div className="flex items-center gap-2">
-          {title && <span className="text-xs font-medium">{title}</span>}
-          <span className="text-xs text-muted-foreground label-text">
+    <div className={cn(
+      'relative rounded-lg border border-border my-4 w-full',
+      'overflow-hidden', // Contain everything within this container
+      className
+    )}>
+      {/* Header - No scroll, truncate content */}
+      <div className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 bg-muted/50 border-b border-border flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+          {title && (
+            <span className="text-xs font-medium truncate">
+              {title}
+            </span>
+          )}
+          <span className="text-xs text-muted-foreground label-text whitespace-nowrap flex-shrink-0">
             {getLanguageLabel(language)}
           </span>
         </div>
-        <CopyButton text={code} />
+        <div className="flex-shrink-0">
+          <CopyButton text={code} />
+        </div>
       </div>
 
-      {/* Code */}
-      <div className="relative">
+      {/* Code - Independent horizontal scroll, no vertical overflow */}
+      <div className="relative w-full overflow-x-auto overflow-y-visible">
         <Suspense
           fallback={
-            <pre className="p-4 overflow-x-auto bg-muted/30 scrollbar-thin">
-              <code className="text-sm font-mono">{code}</code>
+            <pre className="p-3 sm:p-4 overflow-x-auto bg-muted/30 scrollbar-thin m-0">
+              <code className="text-xs sm:text-sm font-mono whitespace-pre block">
+                {code}
+              </code>
             </pre>
           }
         >

@@ -7,7 +7,6 @@ const navigation = [
     title: 'Getting Started',
     items: [
       { title: 'Overview', path: '/overview', icon: DocumentTextIcon },
-      { title: 'Quick Setup', path: '/quick-setup', icon: RocketLaunchIcon },
       { title: 'Getting Started', path: '/getting-started', icon: RocketLaunchIcon },
     ],
   },

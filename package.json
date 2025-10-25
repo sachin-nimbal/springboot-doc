@@ -10,13 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.5",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
-    "@heroicons/react": "^2.1.5",
+    "lucide-react": "^0.548.0",
     "prism-react-renderer": "^2.4.1",
+    "prismjs": "^1.30.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
+    "react-syntax-highlighter": "^16.0.0",
+    "refractor": "^5.0.0",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
@@ -27,6 +31,7 @@
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^5.1.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
